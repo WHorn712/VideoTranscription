@@ -26,7 +26,7 @@ def wrap_text(text, font, max_width):
     return lines[:2]  # Retorna no máximo duas linhas
 
 
-def process_video(input_path, output_path=None):
+def process_video(initial_transcricao, input_path, output_path=None):
     if not os.path.exists(input_path):
         print(f"Error: The file {input_path} does not exist.")
         return
@@ -38,11 +38,6 @@ def process_video(input_path, output_path=None):
 
     font_size = 40  # Ajuste conforme necessário
 
-    initial_transcricao = [
-        ("Olá", "0.0"), ("este", "0.5"), ("é", "1.0"), ("um", "1.5"), ("vídeo", "2.0"),
-        ("de", "2.5"), ("teste", "3.0"), ("para", "3.5"), ("legendas", "4.0"), ("dinâmicas", "4.5"),
-        ("em", "5.0"), ("duas", "5.5"), ("linhas", "6.0"), ("na", "6.5"), ("tela", "7.0")
-    ]
 
     state = {
         'current_word_time': 0,
@@ -119,9 +114,3 @@ def process_video(input_path, output_path=None):
 
     video.close()
     video_with_text.close()
-
-
-# Uso
-input_video = "C:/Users/welli/Downloads/video 1.mp4"
-output_video = "C:/Users/welli/Downloads/processed_video.mp4"
-process_video(input_video, output_video)
