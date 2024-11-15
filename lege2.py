@@ -45,6 +45,7 @@ def process_video(initial_transcricao, input_path, output_path=None):
     }
 
     def get_new_text(font, max_width, transcricao, current_word_time):
+        print(current_word_time, transcricao)
         text = ""
         last_word_time = current_word_time
         new_transcricao = transcricao.copy()
@@ -61,9 +62,6 @@ def process_video(initial_transcricao, input_path, output_path=None):
             if width1 <= max_width and not line2:
                 line1 = test_line1
                 last_word_time = float(time)
-            elif line1 == "":
-                line1 = test_line1
-                last_word_time = float(time)
             else:
                 # If first line is full or there's already content in second line, add to second line
                 test_line2 = line2 + word + " "
@@ -71,9 +69,6 @@ def process_video(initial_transcricao, input_path, output_path=None):
                 width2 = bbox2[2] - bbox2[0]
 
                 if width2 <= max_width:
-                    line2 = test_line2
-                    last_word_time = float(time)
-                elif line2 == "":
                     line2 = test_line2
                     last_word_time = float(time)
                 else:
