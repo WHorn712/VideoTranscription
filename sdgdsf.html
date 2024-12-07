@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capturar Miniatura do Vídeo</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Selecione um arquivo de vídeo</h1>
+    <input type="file" id="videoFile" accept="video/*">
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const videoFile = document.getElementById('videoFile');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const video = document.createElement('video');
+
+        videoFile.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileURL = URL.createObjectURL(file);
+                video.src = fileURL;
+
+                video.addEventListener('loadeddata', function() {
+                    // Define o tamanho do canvas de acordo com o tamanho natural do vídeo
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    // Captura o quadro a 1 segundo (ajuste conforme necessário)
+                    video.currentTime = 1;
+                }, { once: true });
+
+                video.addEventListener('seeked', function() {
+                    // Desenha o quadro no tamanho original no canvas
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(fileURL);
+                    resizeCanvas(0.2)
+                }, { once: true });
+            }
+        });
+
+        // Função para redimensionar a imagem proporcionalmente
+        function resizeCanvas(scaleFactor) {
+            const originalWidth = video.videoWidth;
+            const originalHeight = video.videoHeight;
+            canvas.width = originalWidth * scaleFactor;
+            canvas.height = originalHeight * scaleFactor;
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>

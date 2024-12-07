@@ -466,6 +466,26 @@
             padding: 0;
         }
 
+        .custom-button.new-action-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-family: 'Arial', serif;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #ffaeae;
+            border: 2px solid #ffaeae;
+            border-radius: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .custom-button.new-action-btn:hover {
+            background-color: #ff7f7f;
+            transform: scale(1.05);
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-direction: column;
@@ -596,6 +616,7 @@
         </nav>
     </header>
 
+
     <div class="container">
         <div class="main-content">
             <h1>TESTANDO...</h1>
@@ -607,6 +628,9 @@
                     <button id="transcreverBtn">Transcrever</button>
                 </div>
             </div>
+            <input type="file" id="fileInput" accept="video/*" style="display: none;" />
+            <p><button class="custom-button new-action-btn" id="indexarBtn">INDEXAR VÍDEO</button></p>
+            <canvas id="canvas" style="display: none; margin: 0 auto; border: 1px solid #ccc;"></canvas>
         </div>
         <br>
         <div>
@@ -792,6 +816,7 @@
     </div>
 
 <script>
+
     // Seleciona os modais e botões
     var modal = document.getElementById("myModal");
     var modalContato = document.getElementById("myModalContato");
@@ -803,9 +828,47 @@
     var form = modal.querySelector("form");
     var submitButton = form.querySelector('button[type="submit"]');
     var btnComoUsar = document.getElementById('comoUsarLink');
+    var fileInput = document.getElementById("fileInput");
+    var indexarBtn = document.getElementById("indexarBtn");
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    var video = document.createElement("video");
+
+
+        fileInput.addEventListener("change", function(event) {
+        if (event.target.files.length > 0) {
+            var file = event.target.files[0];
+            var fileURL = URL.createObjectURL(file);
+            video.src = fileURL;
+
+            video.addEventListener("loadeddata", function() {
+                video.currentTime = 1; // Define o tempo para capturar o quadro
+            }, { once: true });
+
+            video.addEventListener("seeked", function() {
+                // Ajusta o tamanho do canvas conforme o tamanho original do vídeo
+                canvas.width = video.videoWidth * 0.3; // Reduz para 50%
+                canvas.height = video.videoHeight * 0.3; // Reduz para 50%
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(fileURL);
+                canvas.style.display = "block"; // Mostra o canvas
+            }, { once: true });
+        }
+    });
 
     document.getElementById('logoButton').addEventListener('click', function() {
         window.location.href = 'main_web.html';  // Substitua 'nova_pagina.html' pelo caminho real da página de destino
+    });
+
+    indexarBtn.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function(event) {
+        if (event.target.files.length > 0) {
+            var fileName = event.target.files[0].name;
+            alert("Arquivo selecionado: " + fileName);
+        }
     });
 
     // Função para abrir o modal de cadastro
