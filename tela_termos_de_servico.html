@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transcrição de Vídeo</title>
+    <title>Termos de Serviço</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Estilos mantidos do seu código original */
@@ -318,6 +318,8 @@
             max-width: 600px;
         }
 
+
+
         .input-group input {
             flex-grow: 1;
             padding: 12px 15px;
@@ -466,25 +468,7 @@
             padding: 0;
         }
 
-        .custom-button.new-action-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-family: 'Arial', serif;
-            font-size: 1.2rem;
-            color: #fff;
-            background-color: #ffaeae;
-            border: 2px solid #ffaeae;
-            border-radius: 25px;
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
 
-        .custom-button.new-action-btn:hover {
-            background-color: #ff7f7f;
-            transform: scale(1.05);
-        }
 
         @media (max-width: 768px) {
             .navbar {
@@ -588,38 +572,31 @@
             opacity: 0.8;
         }
 
-        <style>
-    /* Outros estilos existentes */
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Espaçamento entre os itens */
+        }
 
-    /* Estilo ajustado para o botão "INDEXAR VÍDEO" */
-    #indexarBtn.custom-button.new-action-btn {
-        background-color: #e0e0e0; /* Cor de fundo mais suave */
-        color: #666; /* Cor do texto menos destacada */
-        border: 5px solid #ccc; /* Borda mais suave */
-        padding: 8px 16px !important; /* Reduz a altura e largura do botão */
-        border-radius: 5px !important; /* Menos arredondado */
-        transition: background-color 0.3s ease, transform 0.3s ease;
-    }
+        .grid-item {
+            flex: 1 1 45%; /* Faz com que cada item ocupe cerca de 45% da largura do contêiner */
+            max-width: 45%;
+            text-align: center;
+            background-color: #fff; /* Cor de fundo branca para destacar */
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
 
-    #indexarBtn.custom-button.new-action-btn:hover {
-        background-color: #d3d3d3; /* Cor levemente alterada no hover */
-        transform: scale(1.02); /* Pequena animação no hover */
-    }
+        @media (max-width: 768px) {
+            .grid-item {
+                flex: 1 1 100%; /* Em telas menores, cada item ocupa 100% da largura */
+                max-width: 100%;
+            }
+        }
 
-    /* Estilo destacado para o botão "TRANSCREVER" */
-    #transcreverBtn {
-        background-color: #ff4c4c; /* Cor de fundo mais vibrante */
-        color: #fff; /* Cor do texto em branco */
-        border: 2px solid #ff1c1c; /* Borda mais intensa */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
-        transition: background-color 0.3s ease, transform 0.3s ease;
-    }
-
-    #transcreverBtn:hover {
-        background-color: #cc0000; /* Cor mais intensa no hover */
-        transform: scale(1.05); /* Aumento mais perceptível no hover */
-    }
-</style>
 
 
 
@@ -649,118 +626,8 @@
     </header>
 
 
-    <div class="container">
-        <div class="main-content">
-            <h1>TESTANDO...</h1>
-            <p class="subtitle">CREATING A VIDEO TRANSCRIPTION FOR CUTS</p>
 
-            <div class="input-section">
-                <div class="input-group">
-                    <input type="text" id="videoLink" placeholder="Cole o link do vídeo aqui">
-                    <button id="fetch-video">
-                        <img src="search.png" alt="Ícone de lupa" style="width: 32px; height: 32px;">
-                    </button>
-                </div>
-            </div>
-            <input type="file" id="fileInput" accept="video/*" style="display: none;" />
-            <p><button class="custom-button new-action-btn" id="indexarBtn">INDEXAR VÍDEO</button></p>
-            <canvas id="canvas" style="display: none; margin: 0 auto; border: 1px solid #ccc;"></canvas>
-            <div id="video-info" style="text-align: center; margin-top: 20px;"></div>
-            <br>
-            <p><button class="custom-button new-action-btn" id="transcreverBtn">TRANSCREVER</button></p>
-        </div>
-        <br>
-        <div>
-            <h2 class="txt">O YouTube é a maior plataforma de compartilhamento de vídeos do mundo e oferece uma excelente experiência para o usuário enviar, visualizar e compartilhar vídeos. O que ele não pode fornecer é o download de um vídeo do YouTube. É por isso que o yt1d está aqui para te ajudar!
-                Com nosso downloader de vídeos do YouTube, você pode pesquisar vídeos e baixá-los gratuitamente! Você pode baixar vídeos do YouTube de alta qualidade em qualidade MP4, MP3, SQ, HD, Full HD e outros formatos. Nosso downloader pode ser usado tanto no PC quanto no celular, permitindo que você use em qualquer lugar!
-            </h2>
-        </div>
-        <br>
-        <br>
-        <div class="box-container">
-            <div class="box">
-                <img src="type1.png" alt="" width="80">
-                <div class="txt" style="margin-top: 20px; padding-left: 10px;">
-                    Esse é apenas um teste 123, nesse text
-                    <p style="padding-left: 20px;">ssdjfbsdjkf sdfs dfgdfg dfgdf</p>
-                </div>
-            </div>
-            <div class="box">
-                <img src="type2.png" alt="" width="80">
-                <div class="txt" style="margin-top: 20px; padding-left: 10px;">esse é apenas um teste 123, nesse text o vou adicionar todas
-                os benfícios do plano de assinante.dgdfg sdfgsdfg sdfgsdfgsd fgdfgsd fgxcvzxcvzxc vzxcvzxcvxcvzxcvzxcv
-                sdgfdfgsdfg</div>
-            </div>
-            <div class="box">
-                <img src="type3.png" alt="" width="80">
-                <div class="txt" style="margin-top: 20px; padding-left: 10px;">esse é apenas um teste 123, nesse text o vou adicionar todas
-                os benfícios do plano de assinante.dgdfg sdfgsdfg sdfgsdfgsd fgdfgsd fgxcvzxcvzxc vzxcvzxcvxcvzxcvzxcv
-                sdgfdfgsdfg</div>
-            </div>
-        </div>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <div class="image-treatment">
-            <h2>FAÇA ALGO POR VOCÊ...</h2>
-            <br>
-            <br>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
-                <div style="text-align: center;">
-                    <img src="ex1.png" alt="Imagem Sem Tratamento" width="300">
-                </div>
-                <img src="flecha.png" alt="Imagem Com Tratamento" width="150">
-                <div style="text-align: center;">
-                    <img src="ex1leg.png" alt="Imagem Com Tratamento" width="300">
-                </div>
-            </div>
-            <br>
-            <br>
-            <h2 class="red-line" style="position: relative;"></h2>
-            <br>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
-                <div style="text-align: center;">
-                    <img src="ex2.png" alt="Imagem Sem Tratamento" width="300">
-                </div>
-                <img src="flecha.png" alt="Imagem Com Tratamento" width="150">
-                <div style="text-align: center;">
-                    <img src="ex2leg.png" alt="Imagem Com Tratamento" width="300">
-                </div>
-            </div>
-            <br>
-            <br>
-            <h2 class="red-line" style="position: relative;"></h2>
-            <br>
-            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
-                <div style="text-align: center;">
-                    <img src="ex3.png" alt="Imagem Sem Tratamento" width="300">
-                </div>
-                <img src="flecha.png" alt="Imagem Com Tratamento" width="150">
-                <div style="text-align: center;">
-                    <img src="ex3leg.png" alt="Imagem Com Tratamento" width="300">
-                </div>
-            </div>
-            <br>
-            <br>
-            <br>
-            <div class="price-boxes">
-                <div class="price-box">
-                    <img src="price1.png" alt="" width="120">
-                    <a class="custom-button sign-button">Assinar</a>
-                </div>
-                <div class="price-box">
-                    <img src="price2.png" alt="" width="150">
-                    <a class="custom-button sign-button">Assinar</a>
-                </div>
-                <div class="price-box">
-                    <img src="price3.png" alt="" width="150">
-                    <a class="custom-button sign-button">Assinar</a>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <footer class="footer">
         <div class="footer-container">
@@ -858,75 +725,18 @@
     var modalContato = document.getElementById("myModalContato");
     var modalPrice = document.getElementById("myModalPrice");
     var btnCadastrar = document.getElementById("cadastrarBtn");
-    var btnContato = document.querySelector('.nav-links li:nth-child(3) a');
+    var btnContato = document.querySelector('.nav-links li:nth-child(3) a'); // Seleciona o botão "Contato"
     var btnTranscrever = document.getElementById("transcreverBtn");
     var spanCloses = document.querySelectorAll('.close');
     var form = modal.querySelector("form");
     var submitButton = form.querySelector('button[type="submit"]');
     var btnComoUsar = document.getElementById('comoUsarLink');
-    var fileInput = document.getElementById("fileInput");
-    var indexarBtn = document.getElementById("indexarBtn");
-    var canvas = document.getElementById("canvas");
-    var context = canvas.getContext("2d");
-    var video = document.createElement("video");
 
-    fileInput.addEventListener("change", function(event) {
-        if (event.target.files.length > 0) {
-            var file = event.target.files[0];
-            var fileURL = URL.createObjectURL(file);
-            video.src = fileURL;
 
-            video.addEventListener("loadeddata", function() {
-                video.currentTime = 1; // Define o tempo para capturar o quadro
-            }, { once: true });
-
-            video.addEventListener("seeked", function() {
-                // Limpa qualquer imagem anterior
-                document.getElementById('video-info').innerHTML = '';
-
-                // Ajusta o tamanho do canvas conforme o tamanho original do vídeo
-                canvas.width = video.videoWidth * 0.3;
-                canvas.height = video.videoHeight * 0.3;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                URL.revokeObjectURL(fileURL);
-                canvas.style.display = "block"; // Mostra o canvas
-            }, { once: true });
-        }
-    });
-
-    document.getElementById('fetch-video').addEventListener('click', function() {
-        const url = document.getElementById('videoLink').value;
-        const videoId = extractVideoId(url);
-        if (videoId) {
-            displayThumbnail(videoId);
-        } else {
-            document.getElementById('video-info').innerHTML = 'Link inválido. Por favor, insira um link válido do YouTube.';
-        }
-    });
 
     document.getElementById('logoButton').addEventListener('click', function() {
-        window.location.href = 'main_web.html';
+        window.location.href = 'main_web.html';  // Substitua 'nova_pagina.html' pelo caminho real da página de destino
     });
-
-    indexarBtn.addEventListener('click', function() {
-        fileInput.click();
-    });
-
-    function extractVideoId(url) {
-        const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/.*(?:v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-        const match = url.match(regex);
-        return match ? match[1] : null;
-    }
-
-    function displayThumbnail(videoId) {
-        canvas.style.display = "none"; // Esconde o canvas caso esteja visível
-        const imgUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
-        document.getElementById('video-info').innerHTML = `
-            <img src="${imgUrl}" alt="Thumbnail do vídeo" style="max-width: 100%; height: auto; border-radius: 10px;">
-        `;
-    }
-
-    // Outros códigos para modais e funcionalidade existente permanecem os mesmos...
 
     // Função para abrir o modal de cadastro
     function abrirModal() {
@@ -997,4 +807,3 @@
 </script>
 </body>
 </html>
-

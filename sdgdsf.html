@@ -3,59 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capturar Miniatura do Vídeo</title>
+    <title>Como Usar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        canvas {
-            display: block;
-            margin: 20px auto;
-            border: 1px solid #ccc;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .grid-item {
+            flex: 1 1 45%;
+            max-width: 45%;
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-item {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Selecione um arquivo de vídeo</h1>
-    <input type="file" id="videoFile" accept="video/*">
-    <canvas id="canvas"></canvas>
+    <header class="header">
+        <nav class="navbar">
+            <button class="logo-button" id="logoButton">LEGENDAS</button>
+            <ul class="nav-links">
+                <li><a href="main_web.html">Início</a></li>
+                <li><a href="tela_como_usar.html">Como Usar</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+            <div class="user-section">
+                <div class="user-image">
+                    <img src="user.png" alt="Imagem do Usuário">
+                </div>
+                <div class="user-buttons">
+                    <a href="#">Entrar</a>
+                    <a id="cadastrarBtn">Cadastrar</a>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-    <script>
-        const videoFile = document.getElementById('videoFile');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const video = document.createElement('video');
+    <div class="container">
+        <div class="grid-container">
+            <div class="grid-item">
+                <h2>INSIRA O LINK DE UM VÍDEO DO YOUTUBE</h2>
+                <img src="ex4.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>CLIQUE EM PESQUISAR</h2>
+                <img src="ex5.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>OU INSIRA UM VÍDEO A PARTIR DO COMPUTADOR</h2>
+                <img src="ex6.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>CLIQUE EM TRANSCREVER E VEJA A MÁGICA ACONTECER</h2>
+                <img src="ex7.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+        </div>
+    </div>
 
-        videoFile.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const fileURL = URL.createObjectURL(file);
-                video.src = fileURL;
-
-                video.addEventListener('loadeddata', function() {
-                    // Define o tamanho do canvas de acordo com o tamanho natural do vídeo
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-
-                    // Captura o quadro a 1 segundo (ajuste conforme necessário)
-                    video.currentTime = 1;
-                }, { once: true });
-
-                video.addEventListener('seeked', function() {
-                    // Desenha o quadro no tamanho original no canvas
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    URL.revokeObjectURL(fileURL);
-                    resizeCanvas(0.2)
-                }, { once: true });
-            }
-        });
-
-        // Função para redimensionar a imagem proporcionalmente
-        function resizeCanvas(scaleFactor) {
-            const originalWidth = video.videoWidth;
-            const originalHeight = video.videoHeight;
-            canvas.width = originalWidth * scaleFactor;
-            canvas.height = originalHeight * scaleFactor;
-
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        }
-    </script>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="#">Termos de Serviço</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Contato</a>
+                <a href="#">Sobre Nós</a>
+            </div>
+            <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
+        </div>
+    </footer>
 </body>
 </html>

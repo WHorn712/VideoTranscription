@@ -572,6 +572,31 @@
             opacity: 0.8;
         }
 
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Espaçamento entre os itens */
+        }
+
+        .grid-item {
+            flex: 1 1 45%; /* Faz com que cada item ocupe cerca de 45% da largura do contêiner */
+            max-width: 45%;
+            text-align: center;
+            background-color: #fff; /* Cor de fundo branca para destacar */
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-item {
+                flex: 1 1 100%; /* Em telas menores, cada item ocupa 100% da largura */
+                max-width: 100%;
+            }
+        }
+
 
 
 
@@ -601,12 +626,59 @@
     </header>
 
 
-
-
+    <br>
+    <br>
+    <div class="container">
+        <div>
+            <h2 class="txt">O YouTube é a maior plataforma de compartilhamento de vídeos do mundo e oferece uma excelente experiência para o usuário enviar, visualizar e compartilhar vídeos. O que ele não pode fornecer é o download de um vídeo do YouTube. É por isso que o yt1d está aqui para te ajudar!
+                Com nosso downloader de vídeos do YouTube, você pode pesquisar vídeos e baixá-los gratuitamente! Você pode baixar vídeos do YouTube de alta qualidade em qualidade MP4, MP3, SQ, HD, Full HD e outros formatos. Nosso downloader pode ser usado tanto no PC quanto no celular, permitindo que você use em qualquer lugar!
+            </h2>
+        </div>
+        <br>
+        <br>
+        <div class="grid-container">
+            <div class="grid-item">
+                <h2>INSIRA O LINK DE UM VÍDEO DO YOUTUBE</h2>
+                <img src="ex4.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>CLIQUE EM PESQUISAR</h2>
+                <img src="ex5.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>OU INSIRA UM VÍDEO A PARTIR DO COMPUTADOR</h2>
+                <img src="ex6.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+            <div class="grid-item">
+                <h2>CLIQUE EM TRANSCREVER E VEJA A MÁGICA ACONTECER</h2>
+                <img src="ex7.png" alt="Imagem Sem Tratamento" width="300">
+            </div>
+        </div>
+    </div>
 
 
 
     <div class="container">
+        <br>
+        <br>
+        <br>
+        <div>
+            <h2 class="txt">O YouTube é a maior plataforma de compartilhamento de vídeos do mundo e oferece uma excelente experiência para o usuário enviar, visualizar e compartilhar vídeos. O que ele não pode fornecer é o download de um vídeo do YouTube. É por isso que o yt1d está aqui para te ajudar!
+                Com nosso downloader de vídeos do YouTube, você pode pesquisar vídeos e baixá-los gratuitamente! Você pode baixar vídeos do YouTube de alta qualidade em qualidade MP4, MP3, SQ, HD, Full HD e outros formatos. Nosso downloader pode ser usado tanto no PC quanto no celular, permitindo que você use em qualquer lugar!
+            </h2>
+        </div>
+        <br>
+        <br>
+        <br>
+        <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <img src="ex2.png" alt="Imagem Sem Tratamento" width="300">
+                </div>
+                <img src="flecha.png" alt="Imagem Com Tratamento" width="150">
+                <div style="text-align: center;">
+                    <img src="ex2leg.png" alt="Imagem Com Tratamento" width="300">
+                </div>
+            </div>
         <br>
         <br>
         <div>
@@ -616,35 +688,15 @@
         </div>
     </div>
     <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
 
 
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-links">
-                <a href="#">Termos de Serviço</a>
-                <a href="#">Política de Privacidade</a>
+                <a href="tela_termos_de_servico.html">Termos de Serviço</a>
+                <a href="tela_politica_de_privacidade">Política de Privacidade</a>
                 <a href="#">Contato</a>
-                <a href="#">Sobre Nós</a>
+                <a href="tela_sobre_nos">Sobre Nós</a>
             </div>
             <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
         </div>
