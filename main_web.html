@@ -766,9 +766,9 @@
         <div class="footer-container">
             <div class="footer-links">
                 <a href="tela_termos_de_servico.html">Termos de Serviço</a>
-                <a href="tela_politica_de_privacidade">Política de Privacidade</a>
+                <a href="tela_politica_de_privacidade.html">Política de Privacidade</a>
                 <a href="#">Contato</a>
-                <a href="tela_sobre_nos">Sobre Nós</a>
+                <a href="tela_sobre_nos.html">Sobre Nós</a>
             </div>
             <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
         </div>
@@ -869,6 +869,12 @@
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
     var video = document.createElement("video");
+    var btnContatoRodape = document.querySelector('.footer-links a:nth-child(3)');
+
+    btnContatoRodape.addEventListener('click', function(event) {
+        event.preventDefault(); // Previne o comportamento padrão do link
+        abrirModalContato(); // Abre o modal de contato
+    });
 
     fileInput.addEventListener("change", function(event) {
         if (event.target.files.length > 0) {
@@ -965,7 +971,13 @@
     // Ligar o evento de clique a todos os botões "Assinar"
     var signButtons = document.querySelectorAll('.sign-button');
     signButtons.forEach(function(button) {
-        button.onclick = abrirModal;
+        button.onclick = function() {
+            // Primeiro, feche o modal de preço
+            modalPrice.style.display = "none";
+
+            // Em seguida, abra o modal de cadastro
+            abrirModal();
+        };
     });
 
     // Função para verificar se todos os campos estão preenchidos
