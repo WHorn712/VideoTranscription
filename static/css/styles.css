@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termos de Serviço</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos mantidos do seu código original */
+/* Estilos mantidos do seu código original */
         * {
             margin: 0;
             padding: 0;
@@ -318,8 +310,6 @@
             max-width: 600px;
         }
 
-
-
         .input-group input {
             flex-grow: 1;
             padding: 12px 15px;
@@ -468,7 +458,42 @@
             padding: 0;
         }
 
+        .logo-button {
+            display: inline-block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffaeae;
+            font-family: 'Lucida Sans', sans-serif;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            margin: 0;
+            padding: 0;
+        }
 
+
+
+        .custom-button.new-action-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-family: 'Arial', serif;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #ffaeae;
+            border: 2px solid #ffaeae;
+            border-radius: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .custom-button.new-action-btn:hover {
+            background-color: #ff7f7f;
+            transform: scale(1.05);
+        }
 
         @media (max-width: 768px) {
             .navbar {
@@ -515,6 +540,31 @@
                 position: static;
                 flex-direction: row;
                 gap: 10px;
+            }
+        }
+
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Espaçamento entre os itens */
+        }
+
+        .grid-item {
+            flex: 1 1 45%; /* Faz com que cada item ocupe cerca de 45% da largura do contêiner */
+            max-width: 45%;
+            text-align: center;
+            background-color: #fff; /* Cor de fundo branca para destacar */
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-item {
+                flex: 1 1 100%; /* Em telas menores, cada item ocupa 100% da largura */
+                max-width: 100%;
             }
         }
 
@@ -572,296 +622,34 @@
             opacity: 0.8;
         }
 
-        .grid-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px; /* Espaçamento entre os itens */
-        }
+        <style>
+    /* Outros estilos existentes */
 
-        .grid-item {
-            flex: 1 1 45%; /* Faz com que cada item ocupe cerca de 45% da largura do contêiner */
-            max-width: 45%;
-            text-align: center;
-            background-color: #fff; /* Cor de fundo branca para destacar */
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-
-        @media (max-width: 768px) {
-            .grid-item {
-                flex: 1 1 100%; /* Em telas menores, cada item ocupa 100% da largura */
-                max-width: 100%;
-            }
-        }
-
-
-
-
-    </style>
-</head>
-<body>
-    <header class="header">
-        <nav class="navbar">
-            <button class="logo-button" id="logoButton">
-                LEGENDAS
-            </button>
-            <ul class="nav-links">
-                <li><a href="main_web.html">Início</a></li>
-                <li><a href="tela_como_usar.html" >Como Usar</a></li>
-                <li><a href="#">Contato</a></li>
-            </ul>
-            <div class="user-section">
-                <div class="user-image">
-                    <img src="user.png" alt="Imagem do Usuário">
-                </div>
-                <div class="user-buttons">
-                    <a href="#">Entrar</a>
-                    <a id="cadastrarBtn">Cadastrar</a>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <br>
-    <br>
-    <div class="container">
-        <div>
-            <h2 class="txt">Bem-vindo ao site "LEGENDAS". Ao acessar e utilizar este site, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso, que, juntamente com nossa política de privacidade, regem o relacionamento do site com você. Se você discordar de qualquer parte destes termos, por favor, não utilize nosso site.
-            </h2>
-        </div>
-        <br>
-        <h1></h1>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Uso do Serviço</h3>
-        </div>
-        <h2 class="txt">Este serviço é destinado a fornecer transcrições de vídeos em diferentes formatos. Os usuários
-            devem garantir que têm os direitos apropriados para usar o conteúdo fornecido para transcrição.</h2>
-        <br>
-        <br>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Propriedade Intelectual</h3>
-        </div>
-        <h2 class="txt">Todo o conteúdo, design e layout deste site são propriedade da Horn Corp., e estão protegidos
-            por leis de direitos autorais. Qualquer reprodução ou redistribuição de qualquer parte do conteúdo é
-            estritamente proibida, exceto com permissão expressa por escrito.</h2>
-        <br>
-        <br>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Limitações de Responsabilidade</h3>
-        </div>
-        <h2 class="txt">A Horn Corp. não se responsabiliza por perdas ou danos indiretos ou consequenciais que possam
-            surgir do uso deste site.</h2>
-        <br>
-        <br>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Alterações nos Termos</h3>
-        </div>
-        <h2 class="txt">Reservamo-nos o direito de alterar estes termos a qualquer momento. É sua responsabilidade
-            revisar os termos regularmente.</h2>
-        <br>
-        <br>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Resolução de Disputas</h3>
-        </div>
-        <h2 class="txt">Quaisquer disputas relacionadas ao uso deste site serão regidas pelas leis do Brasil, e você
-            concorda em submeter-se à jurisdição exclusiva dos tribunais brasileiros.</h2>
-        <br>
-        <br>
-        <br>
-        <div>
-            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Contato</h3>
-        </div>
-        <h2 class="txt">Para quaisquer dúvidas ou preocupações sobre estes Termos de Serviço, entre em contato através
-            do e-mail wellihorn616@gmail.com ou pelo WhatsApp no número (51)998889364.</h2>
-    </div>
-    <br>
-    <br>
-
-
-
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-links">
-                <a href="tela_termos_de_servico.html">Termos de Serviço</a>
-                <a href="tela_politica_de_privacidade.html">Política de Privacidade</a>
-                <a href="#">Contato</a>
-                <a href="tela_sobre_nos.html">Sobre Nós</a>
-            </div>
-            <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Modal de Contato -->
-    <div id="myModalContato" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Suporte</h2>
-            <br>
-            <br>
-            <h2 class="txt centralizado">E-mail: wellihorn616@gmail.com</h2>
-            <br>
-            <h2 class="txt centralizado">whatsaap: (51)998889364</h2>
-
-        </div>
-    </div>
-
-    <!-- Modal de Cadastro -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="txt centralizado">Cadastro</h2>
-            <form>
-                <label for="name">Nome:</label><br>
-                <input type="text" class="input" placeholder="Nome" id="name" name="name" required><br><br>
-                <label for="email">Email:</label><br>
-                <input type="email" class="input" placeholder="Email" id="email" name="email" required><br><br>
-                <label for="password">Senha:</label><br>
-                <input type="password" class="input" placeholder="Senha" id="password" name="password" required><br><br>
-                <label for="password">Repita a Senha:</label><br>
-                <input type="password" class="input" placeholder="Senha" id="passwordrepeat" name="passwordrepeat" required><br><br>
-                <button type="submit">Cadastrar</button>
-                <br>
-                <p class="or-text">ou</p>
-                <br>
-                <div class="social-buttons">
-                    <button class="social-button google">Google</button>
-                    <button class="social-button facebook">Facebook</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <div id="myModalSuporte" class="modalSuporte">
-        <div class="modalSuporte-content">
-            <span class="close">&times;</span>
-            <h2 class="txt centralizado">Cadastro</h2>
-
-        </div>
-    </div>
-
-    <!-- Modal de price -->
-    <div id="myModalPrice" class="modalPrice">
-        <div class="modalPrice-content">
-            <span class="close">&times;</span>
-            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
-            svdcvdcvbdvsdvsdfv</h2>
-            <br>
-            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
-            svdcvdcvbdvsdvsdffdvdfvdfvkjsdnfvljksdnfvçskldfnvkçsdlfv dfkjnsdfkjbnsdlfkbmsdfbdsfb sdflkvbsndçfkjnvsdfçk
-                lvmsd;lkmv;lsdkfmvs;lkdfbkçsjdfbsdfb dsf.kjbnsdkjfçnbsdlçkfmbsdfbv</h2>
-            <br>
-            <br>
-            <div class="price-boxes">
-            <div class="price-box">
-                <img src="price1.png" alt="Price Option 1" width="120">
-                <a class="custom-button sign-button">Assinar</a>
-            </div>
-            <div class="price-box">
-                <img src="price2.png" alt="Price Option 2" width="150">
-                <a class="custom-button sign-button">Assinar</a>
-            </div>
-            <div class="price-box">
-                <img src="price3.png" alt="Price Option 3" width="150">
-                <a class="custom-button sign-button">Assinar</a>
-            </div>
-        </div>
-        </div>
-    </div>
-
-<script>
-    // Seleciona os modais e botões
-    var modal = document.getElementById("myModal");
-    var modalContato = document.getElementById("myModalContato");
-    var modalPrice = document.getElementById("myModalPrice");
-    var btnCadastrar = document.getElementById("cadastrarBtn");
-    var btnContato = document.querySelector('.nav-links li:nth-child(3) a'); // Seleciona o botão "Contato"
-    var btnTranscrever = document.getElementById("transcreverBtn");
-    var spanCloses = document.querySelectorAll('.close');
-    var form = modal.querySelector("form");
-    var submitButton = form.querySelector('button[type="submit"]');
-    var btnComoUsar = document.getElementById('comoUsarLink');
-
-
-
-    document.getElementById('logoButton').addEventListener('click', function() {
-        window.location.href = 'main_web.html';  // Substitua 'nova_pagina.html' pelo caminho real da página de destino
-    });
-
-    // Função para abrir o modal de cadastro
-    function abrirModal() {
-        modal.style.display = "block";
+    /* Estilo ajustado para o botão "INDEXAR VÍDEO" */
+    #indexarBtn.custom-button.new-action-btn {
+        background-color: #e0e0e0; /* Cor de fundo mais suave */
+        color: #666; /* Cor do texto menos destacada */
+        border: 5px solid #ccc; /* Borda mais suave */
+        padding: 8px 16px !important; /* Reduz a altura e largura do botão */
+        border-radius: 5px !important; /* Menos arredondado */
+        transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
-    // Função para abrir o modal de contato
-    function abrirModalContato() {
-        modalContato.style.display = "block";
+    #indexarBtn.custom-button.new-action-btn:hover {
+        background-color: #d3d3d3; /* Cor levemente alterada no hover */
+        transform: scale(1.02); /* Pequena animação no hover */
     }
 
-    // Função para abrir o modal de preço
-    function abrirModalPrice() {
-        modalPrice.style.display = "block";
+    /* Estilo destacado para o botão "TRANSCREVER" */
+    #transcreverBtn {
+        background-color: #ff4c4c; /* Cor de fundo mais vibrante */
+        color: #fff; /* Cor do texto em branco */
+        border: 2px solid #ff1c1c; /* Borda mais intensa */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+        transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
-    // Adiciona um evento de clique para cada elemento de fechamento
-    spanCloses.forEach(function(spanClose) {
-        spanClose.onclick = function() {
-            this.closest('.modal, .modalPrice').style.display = "none";
-        }
-    });
-
-    // Ligar o evento de clique ao botão "Cadastrar"
-    btnCadastrar.onclick = abrirModal;
-
-    // Ligar o evento de clique ao botão "Contato"
-    btnContato.addEventListener('click', function(event) {
-        event.preventDefault(); // Previne o comportamento padrão do link
-        abrirModalContato();
-    });
-
-    // Ligar o evento de clique ao botão "Transcrever"
-    btnTranscrever.onclick = abrirModalPrice;
-
-    // Ligar o evento de clique a todos os botões "Assinar"
-    var signButtons = document.querySelectorAll('.sign-button');
-    signButtons.forEach(function(button) {
-        button.onclick = abrirModal;
-    });
-
-    // Função para verificar se todos os campos estão preenchidos
-    function verificarCampos() {
-        const inputs = form.querySelectorAll('input[required]');
-        let todosPreenchidos = true;
-
-        inputs.forEach(input => {
-            if (!input.value.trim()) {
-                todosPreenchidos = false;
-            }
-        });
-
-        // Mudar cor do botão com base nos campos preenchidos
-        if (todosPreenchidos) {
-            submitButton.style.backgroundColor = "#FF0000";
-            submitButton.style.color = "#ffffff";
-        } else {
-            submitButton.style.backgroundColor = "#d3d3d3";
-            submitButton.style.color = "#000000";
-        }
+    #transcreverBtn:hover {
+        background-color: #cc0000; /* Cor mais intensa no hover */
+        transform: scale(1.05); /* Aumento mais perceptível no hover */
     }
-
-    // Adicionar evento de input para verificar campos em tempo real
-    form.addEventListener('input', verificarCampos);
-
-    // Inicializar a verificação ao abrir o modal
-    btnCadastrar.addEventListener('click', verificarCampos);
-</script>
-</body>
-</html>
