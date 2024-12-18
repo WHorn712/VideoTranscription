@@ -10,11 +10,13 @@ function getElements(selector) {
 
 // Seleciona elementos de modal de forma genérica
 var modal = getElement("#myModal");
+var modalLogin = getElement("#myModalLogin");
 var modalContato = getElement("#myModalContato");
 var modalPrice = getElement("#myModalPrice");
 
 // Seleciona botões de forma genérica
 var btnCadastrar = getElement("#cadastrarBtn");
+var btnLogin = getElement("#loginBtn");
 var btnContato = getElement('.nav-links li:nth-child(3) a');
 var btnTranscrever = getElement("#transcreverBtn");
 var spanCloses = getElements('.close');
@@ -106,6 +108,7 @@ function abrirModal(modal) {
     if (modal) modal.style.display = "block";
 }
 
+
 function abrirModalContato() {
     abrirModal(modalContato);
 }
@@ -125,6 +128,7 @@ spanCloses.forEach(function(spanClose) {
 
 // Eventos de clique
 if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
+if (btnLogin) btnLogin.onclick = function() { abrirModal(modalLogin); };
 if (btnContato) btnContato.addEventListener('click', function(event) {
     event.preventDefault();
     abrirModalContato();
@@ -163,3 +167,35 @@ if (form) {
 if (btnCadastrar) {
     btnCadastrar.addEventListener('click', verificarCampos);
 }
+
+document.getElementById('registerForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+
+  fetch('/register', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(result => {
+    alert(result);
+  })
+  .catch(error => console.error('Error:', error));
+});
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+
+  fetch('/login', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(result => {
+    alert(result);
+  })
+  .catch(error => console.error('Error:', error));
+});
