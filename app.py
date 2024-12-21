@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import pymysql
 from flask import request, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -26,36 +26,49 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    error_message = None
+
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
-        password = request.form['password']  # Certifique-se de hash a senha aqui
+        password = request.form['password']
         repeatpassword = request.form['passwordrepeat']
         typeSignature = 0
 
         if password != repeatpassword:
-            return "POR FAVOR, REPITA A MESMA SENHA"
+            error_message = "POR FAVOR, REPITA SENHA CORRETAMENTE"
+        else:
+            connection = get_db_connection()
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
+                user = cursor.fetchone()
+            connection.close()
 
-        connection = get_db_connection()
-        with connection.cursor() as cursor:
-            # Busca o usuário pelo email
-            cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
-            user = cursor.fetchone()
-        connection.close()
+            if user:
+                error_message = 'E-MAIL EXISTENTE'
+            else:
+                hashed_senha = generate_password_hash(password, method='pbkdf2:sha256')
+                connection = get_db_connection()
+                with connection.cursor() as cursor:
+                    cursor.execute('INSERT INTO users (nome, email, senha, typeSignature) VALUES (%s, %s, %s, %s)',
+                                   (name, email, hashed_senha, typeSignature))
+                    connection.commit()
+                connection.close()
+                return redirect(url_for('index'))
 
-        if user:
-            return 'E-MAIL EXISTENTE'
+    return render_template('index.html', error_message=error_message)
 
-        hashed_senha = generate_password_hash(password, method='pbkdf2:sha256')
+@app.route('/get_registered_emails', methods=['GET'])
+def get_registered_emails():
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT email FROM users')
+        emails = cursor.fetchall()
+    connection.close()
 
-        connection = get_db_connection()
-        with connection.cursor() as cursor:
-            cursor.execute('INSERT INTO users (nome, email, senha, typeSignature) VALUES (%s, %s, %s, %s)',
-                           (name, email, hashed_senha, typeSignature))
-            connection.commit()
-        connection.close()
-        return redirect(url_for('index'))
-    return render_template('index.html')
+    # Converte a lista de tuplas para uma lista simples de strings
+    email_list = [email[0] for email in emails]
+    return jsonify(email_list)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

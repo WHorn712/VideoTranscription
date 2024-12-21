@@ -150,14 +150,13 @@ function verificarCampos() {
     const inputs = form.querySelectorAll('input[required]');
     let todosPreenchidos = Array.from(inputs).every(input => input.value.trim());
 
-    const senhasIguais = getElement('#password').value === getElement('#passwordrepeat').value;
-
-
     if (submitButton) {
-        if (todosPreenchidos && !registeredEmails.includes(emailInput.value) && senhasIguais) {
+        if (todosPreenchidos && !registeredEmails.includes(emailInput.value)) {
+            submitButton.disabled = false;
             submitButton.style.backgroundColor = "#FF0000";
             submitButton.style.color = "#ffffff";
         } else {
+            submitButton.disabled = true;
             submitButton.style.backgroundColor = "#d3d3d3";
             submitButton.style.color = "#000000";
         }
@@ -232,55 +231,30 @@ var errorMessage = document.querySelector('#error-message');
 // Função para verificar se o e-mail está no banco de dados
 function verificarEmail() {
     if (registeredEmails.includes(emailInput.value)) {
-        emailInput.style.backgroundColor = "#d3d3d3"; // Mesma cor que campo vazio
+        emailInput.style.backgroundColor = "#d3d3d3";
         emailInput.style.color = "#000000";
-        emailInput.setCustomValidity("E-mail já existente.");
+        errorMessage.textContent = 'E-mail já existe.';
+        errorMessage.style.display = 'block';
+
+        if (submitButton) {
+            submitButton.disabled = true; // Desativa o botão
+            submitButton.style.backgroundColor = "#d3d3d3";
+            submitButton.style.color = "#000000";
+        }
+
+        console.log("aqui")
     } else {
-        emailInput.style.backgroundColor = "#e8e8e8"; // Cor normal do campo
+        emailInput.style.backgroundColor = "#e8e8e8";
         emailInput.style.color = "#000000";
         errorMessage.textContent = '';
-        emailInput.setCustomValidity("");
+        errorMessage.style.display = 'none';
+
+        verificarCampos(); // Reavalie se deve ativar o botão
     }
 }
-
-
 
 // Evento de input para disparar a verificação do email
 emailInput.addEventListener('input', function () {
     verificarEmail();
 });
-
-if (form) {
-    form.addEventListener('input', verificarCampos);
-}
-
-// Adicionando eventos de input para disparar a verificação de senha
-getElement('#password').addEventListener('input', verificarSenhas);
-getElement('#passwordrepeat').addEventListener('input', verificarSenhas);
-
-function verificarSenhas() {
-    const senha = getElement('#password');
-    const repetirSenha = getElement('#passwordrepeat');
-
-    // Verifica se os campos de senha estão disponíveis e comparam os valores
-    if (senha && repetirSenha) {
-        if (senha.value !== repetirSenha.value) {
-            repetirSenha.setCustomValidity("Por favor, repita a mesma senha.");
-        } else {
-            repetirSenha.setCustomValidity("");
-        }
-    }
-}
-
-// Adicionando eventos de input para disparar a verificação de senha
-const senhaInput = getElement('#password');
-const repetirSenhaInput = getElement('#passwordrepeat');
-
-if (senhaInput) {
-    senhaInput.addEventListener('input', verificarSenhas);
-}
-
-if (repetirSenhaInput) {
-    repetirSenhaInput.addEventListener('input', verificarSenhas);
-}
 
