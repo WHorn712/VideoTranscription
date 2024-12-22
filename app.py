@@ -1,9 +1,15 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, session
 import pymysql
 from flask import request, redirect, url_for
+from jupyter_events.cli import console
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 app = Flask(__name__)
+
+secret_key = os.urandom(24)
+app.secret_key = os.environ.get('SECRET_KEY', secret_key)
+
 
 # Configurações do banco de dados
 app.config['MYSQL_HOST'] = 'localhost'
@@ -70,6 +76,7 @@ def get_registered_emails():
     email_list = [email[0] for email in emails]
     return jsonify(email_list)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -78,18 +85,24 @@ def login():
 
         connection = get_db_connection()
         with connection.cursor() as cursor:
-            # Busca o usuário pelo email
-            cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
+            cursor.execute('SELECT nome, senha FROM users WHERE email = %s', (email,))
             user = cursor.fetchone()
         connection.close()
 
-        if user and check_password_hash(user[0], password):
-            # Lógica de sucesso no login
-            return 'Logged in successfully'
+        if user and check_password_hash(user[1], password):
+            session['username'] = user[0]
+            return '', 200  # Retorna código 200 para sucesso
         else:
-            # Lógica de falha no login
-            return 'Invalid credentials'
-    return render_template('login.html')
+            return 'Invalid credentials', 401  # Retorna código 401 para falha
+
+    return render_template('index.html')
+
+@app.route('/logged')
+def logged():
+    username = session.get('username')
+    if username:
+        return render_template('logged.html', username=username)
+    return redirect(url_for('login'))
 
 
 @app.route('/como-usar')

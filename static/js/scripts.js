@@ -17,6 +17,7 @@ var modalPrice = getElement("#myModalPrice");
 // Seleciona botões de forma genérica
 var btnCadastrar = getElement("#cadastrarBtn");
 var btnLogin = getElement("#loginBtn");
+var btnEntrar = modalLogin ? modalLogin.querySelector('button[type="submit"]') : null;
 var btnContato = getElement('.nav-links li:nth-child(3) a');
 var btnTranscrever = getElement("#transcreverBtn");
 var spanCloses = getElements('.close');
@@ -63,6 +64,35 @@ if (fileInput) {
                 }
             }, { once: true });
         }
+    });
+}
+
+// Função para verificar os campos do modal de login
+function verificarCamposLogin() {
+    if (!modalLogin) return; // Verifica se o modal existe
+    const loginInputs = modalLogin.querySelectorAll('input[required]');
+    let todosPreenchidosLogin = Array.from(loginInputs).every(input => input.value.trim());
+
+    if (btnEntrar) {
+        if (todosPreenchidosLogin) {
+            btnEntrar.style.backgroundColor = "#FF0000";
+            btnEntrar.style.color = "#ffffff";
+        } else {
+            btnEntrar.style.backgroundColor = "#d3d3d3";
+            btnEntrar.style.color = "#000000";
+        }
+    }
+}
+
+// Evento para disparar a verificação de campos no modal de login
+if (modalLogin) {
+    modalLogin.addEventListener('input', verificarCamposLogin);
+}
+
+if (btnLogin) {
+    btnLogin.addEventListener('click', function() {
+        abrirModal(modalLogin);
+        verificarCamposLogin(); // Verifica os campos ao abrir o modal
     });
 }
 
@@ -141,6 +171,7 @@ signButtons.forEach(function(button) {
     button.onclick = function() {
         if (modalPrice) modalPrice.style.display = "none";
         abrirModal(modal);
+        verificarCampos();
     };
 });
 
@@ -199,9 +230,14 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     method: 'POST',
     body: formData
   })
-  .then(response => response.text())
-  .then(result => {
-    alert(result);
+  .then(response => {
+    if (response.ok) {
+      // Se a resposta do servidor for 200 OK, redirecionar para logged.html
+      window.location.href = '/logged';
+    } else {
+      // Caso contrário, exibir uma mensagem de erro
+      response.text().then(text => alert(text));
+    }
   })
   .catch(error => console.error('Error:', error));
 });
@@ -271,6 +307,21 @@ function verificarSenhas() {
         }
     }
 }
+
+var emailInput = document.querySelector('#loginemail');
+function verificarEmailLogin() {
+    if (registeredEmails.includes(emailInput.value)) {
+        emailInput.setCustomValidity("");
+    } else {
+        emailInput.setCustomValidity("E-mail não cadastrado");
+    }
+}
+const loginemail = getElement('#loginemail');
+if (loginemail) {
+    fetchRegisteredEmails()
+    loginemail.addEventListener('input', verificarEmailLogin);
+}
+
 
 // Adicionando eventos de input para disparar a verificação de senha
 const senhaInput = getElement('#password');

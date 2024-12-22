@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Início</a></li>
+                <li><a href="{{ url_for('como_usar') }}">Como Usar</a></li>
+                <li><a href="{{ url_for('index') }}">Sair</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Bem-vindo, {{ username }}!</h1>
+        <p>Você está logado com sucesso.</p>
+    </main>
+    <footer>
+        <p>© 2024 Horn Corp. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
