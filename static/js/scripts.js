@@ -30,7 +30,7 @@ var canvas = getElement("#canvas");
 var context = canvas ? canvas.getContext("2d") : null;
 var video = document.createElement("video");
 var btnContatoRodape = getElement('.footer-links a:nth-child(3)');
-var emailExistenteBD = false
+var emailExistenteBD = false;
 
 // Eventos
 
@@ -205,6 +205,39 @@ if (btnCadastrar) {
     btnCadastrar.addEventListener('click', verificarCampos);
 }
 
+function showMessageModal() {
+    const modal = document.getElementById('messageModal');
+    modal.style.display = 'block';
+
+    // Fechar o modal após 3 segundos
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 3000);
+    is_sucess_register = false;
+}
+
+function executeActionAndShowModal() {
+    // Supondo que 'fetchAction' seja a ação que desejamos executar
+    fetch('/')
+        .then(response => {
+            if (response.ok) {
+                response.text().then(() => {
+                    // Após a ação bem-sucedida, exibir o modal de mensagem
+                    showMessageModal();
+
+                    // Redirecionar para a página principal após o modal ser fechado
+                    setTimeout(() => {
+                        window.location.href = response.url;
+                    }, 2000); // Adicionando um delay para respeitar o tempo do modal
+                });
+            } else {
+                // Caso contrário, exibir uma mensagem de erro
+                response.text().then(text => alert('Erro ao redirecionar: ' + text));
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 document.getElementById('registerForm').addEventListener('submit', function(event) {
   event.preventDefault();
 
@@ -216,9 +249,10 @@ document.getElementById('registerForm').addEventListener('submit', function(even
   })
   .then(response => response.text())
   .then(result => {
-    alert(result);
+
   })
   .catch(error => console.error('Error:', error));
+  executeActionAndShowModal();
 });
 
 document.getElementById('loginForm').addEventListener('submit', function(event) {
@@ -308,12 +342,13 @@ function verificarSenhas() {
     }
 }
 
-var emailInput = document.querySelector('#loginemail');
+var emailInputLogin = document.querySelector('#loginemail');
 function verificarEmailLogin() {
-    if (registeredEmails.includes(emailInput.value)) {
-        emailInput.setCustomValidity("");
+    if (registeredEmails.includes(emailInputLogin.value)) {
+        emailInputLogin.setCustomValidity("");
     } else {
-        emailInput.setCustomValidity("E-mail não cadastrado");
+        console.log("aquisdfsdf")
+        emailInputLogin.setCustomValidity("E-mail não cadastrado");
     }
 }
 const loginemail = getElement('#loginemail');
