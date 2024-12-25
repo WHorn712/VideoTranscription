@@ -76,6 +76,22 @@ def get_registered_emails():
     email_list = [email[0] for email in emails]
     return jsonify(email_list)
 
+@app.route('/verify_user_password', methods=['POST'])
+def verify_user_password():
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
+        user = cursor.fetchone()
+    connection.close()
+
+    if user and check_password_hash(user[0], password):
+        return jsonify({"valid": True}), 200
+    else:
+        return jsonify({"valid": False, "error": "Senha inválida"}), 401
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -94,7 +110,6 @@ def login():
             return '', 200  # Retorna código 200 para sucesso
         else:
             return 'Invalid credentials', 401  # Retorna código 401 para falha
-
     return render_template('index.html')
 
 @app.route('/logged')

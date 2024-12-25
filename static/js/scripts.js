@@ -257,7 +257,7 @@ document.getElementById('registerForm').addEventListener('submit', function(even
 
 document.getElementById('loginForm').addEventListener('submit', function(event) {
   event.preventDefault();
-
+  verificarSenhasLogin()
   const formData = new FormData(this);
 
   fetch('/login', {
@@ -324,6 +324,40 @@ if (form) {
     form.addEventListener('input', verificarCampos);
 }
 
+function verificarSenhasLogin() {
+    const email = getElement('#loginemail').value;
+    const senhaDigitada = getElement('#loginpassword').value;
+
+    fetch('/verify_user_password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, password: senhaDigitada })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.valid) {
+            getElement('#loginpassword').setCustomValidity("");
+            getElement('#loginpassword').style.backgroundColor = "#e8e8e8"; // Cor normal do campo
+            getElement('#loginpassword').style.color = "#000000";
+        } else {
+            getElement('#loginpassword').setCustomValidity(data.error);
+            getElement('#loginpassword').style.backgroundColor = "#d3d3d3"; // Mesma cor que campo vazio
+            getElement('#loginpassword').style.color = "#000000";
+        }
+    })
+    .catch(error => console.error('Erro ao verificar a senha:', error));
+}
+
+// Adicione o evento para verificar senhas ao input de senha
+const senhaInputLogin = getElement('#loginpassword');
+if (senhaInputLogin) {
+    senhaInputLogin.addEventListener('input', verificarSenhasLogin);
+}
+
+getElement('#loginpassword').addEventListener('input', verificarSenhasLogin);
+
 // Adicionando eventos de input para disparar a verificação de senha
 getElement('#password').addEventListener('input', verificarSenhas);
 getElement('#passwordrepeat').addEventListener('input', verificarSenhas);
@@ -347,7 +381,6 @@ function verificarEmailLogin() {
     if (registeredEmails.includes(emailInputLogin.value)) {
         emailInputLogin.setCustomValidity("");
     } else {
-        console.log("aquisdfsdf")
         emailInputLogin.setCustomValidity("E-mail não cadastrado");
     }
 }
