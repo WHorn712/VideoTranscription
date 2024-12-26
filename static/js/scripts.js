@@ -238,6 +238,13 @@ function executeActionAndShowModal() {
         .catch(error => console.error('Error:', error));
 }
 
+function toggleLoadingSpinner(show) {
+    var loadingSpinner = getElement("#loading-spinner");
+    if (loadingSpinner) {
+        loadingSpinner.style.display = show ? "block" : "none";
+    }
+}
+
 document.getElementById('registerForm').addEventListener('submit', function(event) {
   event.preventDefault();
 
@@ -260,6 +267,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
   verificarSenhasLogin()
   const formData = new FormData(this);
 
+  toggleLoadingSpinner(true);
+
   fetch('/login', {
     method: 'POST',
     body: formData
@@ -270,10 +279,15 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
       window.location.href = '/logged';
     } else {
       // Caso contrário, exibir uma mensagem de erro
-      response.text().then(text => alert(text));
+      getElement('#loginpassword').setCustomValidity("Senha inválida");
+      toggleLoadingSpinner(false);
     }
   })
-  .catch(error => console.error('Error:', error));
+  .catch(error => {
+        console.error('Error:', error);
+        // Esconde a animação de carregamento em caso de erro
+        toggleLoadingSpinner(false);
+    });
 });
 
 let registeredEmails = [];
