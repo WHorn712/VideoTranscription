@@ -1,0 +1,18 @@
+
+    <div id="modalRecupere" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="txt centralizado">RECUPERAR SENHA</h2>
+            <form id="recupereForm" method="POST">
+                <label for="loginemail">Nova Senha:</label><br>
+                <input type="password" class="input" placeholder="Email" id="loginemailrecupere" name="email" required><br><br>
+                <label for="loginpassword">Repita a senha:</label><br>
+                <input type="password" class="input" placeholder="Senha" id="loginpasswordrecupere" name="password" required><br><br>
+                <button type="submit">Registrar</button>
+                <br>
+                <br>
+            </form>
+
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>

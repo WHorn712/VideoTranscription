@@ -1,3 +1,6 @@
+// Declaração global para armazenar e-mails registrados
+let registeredEmails = [];
+
 // Função genérica para selecionar um único elemento
 function getElement(selector) {
     return document.querySelector(selector);
@@ -13,6 +16,7 @@ var modal = getElement("#myModal");
 var modalLogin = getElement("#myModalLogin");
 var modalContato = getElement("#myModalContato");
 var modalPrice = getElement("#myModalPrice");
+var modalRecupere = getElement("#modalRecupere");
 
 // Seleciona botões de forma genérica
 var btnCadastrar = getElement("#cadastrarBtn");
@@ -32,8 +36,16 @@ var video = document.createElement("video");
 var btnContatoRodape = getElement('.footer-links a:nth-child(3)');
 var emailExistenteBD = false;
 
-// Eventos
+// Seleciona o botão de registrar do modal de recuperação
+var btnRegistrarRecupere = modalRecupere ? modalRecupere.querySelector('button[type="submit"]') : null;
 
+// Define o estado inicial dos botões
+if (btnRegistrarRecupere) {
+    btnRegistrarRecupere.style.backgroundColor = "#d3d3d3"; // Cinza por padrão
+    btnRegistrarRecupere.style.color = "#000000";
+}
+
+// Eventos
 if (btnContatoRodape) {
     btnContatoRodape.addEventListener('click', function(event) {
         event.preventDefault();
@@ -139,7 +151,6 @@ function abrirModal(modal) {
     if (modal) modal.style.display = "block";
 }
 
-
 function abrirModalContato() {
     abrirModal(modalContato);
 }
@@ -159,7 +170,11 @@ spanCloses.forEach(function(spanClose) {
 
 // Eventos de clique
 if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
-if (btnLogin) btnLogin.onclick = function() { abrirModal(modalLogin); };
+if (btnLogin) btnLogin.onclick = function() {
+     abrirModal(modalLogin);
+     var recuperePassword = document.getElementById("recoverPasswordBtn");
+     recuperePassword.style.display = "none"
+};
 if (btnContato) btnContato.addEventListener('click', function(event) {
     event.preventDefault();
     abrirModalContato();
@@ -183,7 +198,6 @@ function verificarCampos() {
 
     const senhasIguais = getElement('#password').value === getElement('#passwordrepeat').value;
 
-
     if (submitButton) {
         if (todosPreenchidos && !registeredEmails.includes(emailInput.value) && senhasIguais) {
             submitButton.style.backgroundColor = "#FF0000";
@@ -194,8 +208,6 @@ function verificarCampos() {
         }
     }
 }
-
-
 
 if (form) {
     form.addEventListener('input', verificarCampos);
@@ -245,6 +257,44 @@ function toggleLoadingSpinner(show) {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    var modalLogin = document.querySelector("#myModalLogin");
+    var modalRecupere = document.querySelector("#modalRecupere");
+
+    console.log("Modal Recupere encontrado:", !!modalRecupere); // Verifica se modalRecupere existe
+
+    var btnRecoverPassword = document.querySelector("#recoverPasswordBtn");
+
+    if (btnRecoverPassword) {
+        btnRecoverPassword.addEventListener('click', function() {
+            fetchRegisteredEmails();
+            emailInputLoginRecupere = document.querySelector('#loginemail');
+            if (registeredEmails.includes(emailInputLoginRecupere.value)) {
+                if (modalLogin) {
+                    modalLogin.style.display = "none";
+                }
+                if (modalRecupere) {
+                    modalRecupere.style.display = "block";
+                } else {
+                    console.error("Modal de recuperação não encontrado.");
+                }
+            }
+            else {
+                modalLogin.style.display = "none";
+                modalRecupere.style.display = "none";
+            }});
+    }
+
+    // Evento para verificar senhas no modal de recuperação
+    if (modalRecupere) {
+        modalRecupere.addEventListener('input', verificarSenhasRecupere);
+    }
+});
+
+function for_logged() {
+    window.location.href = '/logged';
+}
+
 document.getElementById('registerForm').addEventListener('submit', function(event) {
   event.preventDefault();
 
@@ -264,7 +314,7 @@ document.getElementById('registerForm').addEventListener('submit', function(even
 
 document.getElementById('loginForm').addEventListener('submit', function(event) {
   event.preventDefault();
-  verificarSenhasLogin()
+  verificarSenhasLogin();
   const formData = new FormData(this);
 
   toggleLoadingSpinner(true);
@@ -276,7 +326,8 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
   .then(response => {
     if (response.ok) {
       // Se a resposta do servidor for 200 OK, redirecionar para logged.html
-      window.location.href = '/logged';
+      setTimeout(for_logged, 3000);
+      toggleLoadingSpinner(false);
     } else {
       // Caso contrário, exibir uma mensagem de erro
       getElement('#loginpassword').setCustomValidity("Senha inválida");
@@ -290,7 +341,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     });
 });
 
-let registeredEmails = [];
+
 
 // Função para buscar e-mails ao abrir o modal
 function fetchRegisteredEmails() {
@@ -326,8 +377,6 @@ function verificarEmail() {
         emailInput.setCustomValidity("");
     }
 }
-
-
 
 // Evento de input para disparar a verificação do email
 emailInput.addEventListener('input', function () {
@@ -370,8 +419,6 @@ if (senhaInputLogin) {
     senhaInputLogin.addEventListener('input', verificarSenhasLogin);
 }
 
-getElement('#loginpassword').addEventListener('input', verificarSenhasLogin);
-
 // Adicionando eventos de input para disparar a verificação de senha
 getElement('#password').addEventListener('input', verificarSenhas);
 getElement('#passwordrepeat').addEventListener('input', verificarSenhas);
@@ -390,20 +437,39 @@ function verificarSenhas() {
     }
 }
 
-var emailInputLogin = document.querySelector('#loginemail');
+function verificarSenhasRecupere() {
+    const novaSenha = modalRecupere.querySelector('#loginemail');
+    const repetirNovaSenha = modalRecupere.querySelector('#loginpassword');
+
+    if (btnRegistrarRecupere) {
+        if (novaSenha.value === repetirNovaSenha.value) {
+            btnRegistrarRecupere.style.backgroundColor = "#FF0000"; // Vermelho quando iguais
+            btnRegistrarRecupere.style.color = "#ffffff";
+        } else {
+            btnRegistrarRecupere.style.backgroundColor = "#d3d3d3"; // Cinza quando diferentes
+            btnRegistrarRecupere.style.color = "#000000";
+        }
+    }
+}
+
+var emailInputLogin = document.querySelector('#loginemail');verificarEmailLogin()
 function verificarEmailLogin() {
     if (registeredEmails.includes(emailInputLogin.value)) {
         emailInputLogin.setCustomValidity("");
+        var recuperePassword = document.getElementById("recoverPasswordBtn");
+        recuperePassword.style.display = "block";
     } else {
         emailInputLogin.setCustomValidity("E-mail não cadastrado");
     }
 }
+
 const loginemail = getElement('#loginemail');
 if (loginemail) {
-    fetchRegisteredEmails()
+    fetchRegisteredEmails();
     loginemail.addEventListener('input', verificarEmailLogin);
+    var recuperePassword = document.getElementById("recoverPasswordBtn");
+    recuperePassword.style.display = "block";
 }
-
 
 // Adicionando eventos de input para disparar a verificação de senha
 const senhaInput = getElement('#password');
@@ -417,3 +483,33 @@ if (repetirSenhaInput) {
     repetirSenhaInput.addEventListener('input', verificarSenhas);
 }
 
+if (btnRegistrarRecupere) {
+    btnRegistrarRecupere.addEventListener('click', function() {
+        const emailInputLogin = document.querySelector('#loginemail').value;
+        const novaSenha = modalRecupere.querySelector('#loginemailrecupere').value;
+        const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere').value;
+
+        if (novaSenha !== repetirNovaSenha) {
+            alert("As senhas não coincidem. Por favor, tente novamente.");
+            return;
+        }
+
+        fetch('/update_password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: emailInputLogin, new_password: novaSenha })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Senha alterada com sucesso!");
+                modalRecupere.style.display = "none";
+            } else {
+                alert("Erro ao alterar senha. " + data.error);
+            }
+        })
+        .catch(error => console.error('Erro:', error));
+    });
+}

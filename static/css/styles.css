@@ -175,6 +175,8 @@
             transition: color 0.3s ease;
         }
 
+
+
         .nav-links a:hover {
             color: #FF0000;
         }
@@ -658,3 +660,19 @@
             color: #FF4500; /* Cor do texto em laranja */
             font-weight: bold; /* Texto em negrito */
         }
+
+    .recover-password-btn {
+        background: none;
+        border: none;
+        color: #4F4B4A;
+        cursor: pointer;
+        font-size: 0.9em;
+        text-decoration: underline;
+        display: block;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .recover-password-btn:hover {
+        color: #211F1F;
+    }
