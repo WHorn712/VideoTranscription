@@ -1,5 +1,5 @@
 // Declaração global para armazenar e-mails registrados
-let registeredEmails = [];
+registeredEmails = [];
 
 // Função genérica para selecionar um único elemento
 function getElement(selector) {
@@ -258,10 +258,12 @@ function toggleLoadingSpinner(show) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var modalLogin = document.querySelector("#myModalLogin");
-    var modalRecupere = document.querySelector("#modalRecupere");
+    // Duplicação desnecessária destas variáveis
+    // Elas já foram definidas anteriormente no código
+    // var modalLogin = document.querySelector("#myModalLogin");
+    // var modalRecupere = document.querySelector("#modalRecupere");
 
-    console.log("Modal Recupere encontrado:", !!modalRecupere); // Verifica se modalRecupere existe
+    console.log("Modal Recupere encontrado:", !!modalRecupere);
 
     var btnRecoverPassword = document.querySelector("#recoverPasswordBtn");
 
@@ -414,7 +416,7 @@ function verificarSenhasLogin() {
 }
 
 // Adicione o evento para verificar senhas ao input de senha
-const senhaInputLogin = getElement('#loginpassword');
+senhaInputLogin = getElement('#loginpassword');
 if (senhaInputLogin) {
     senhaInputLogin.addEventListener('input', verificarSenhasLogin);
 }
@@ -463,7 +465,7 @@ function verificarEmailLogin() {
     }
 }
 
-const loginemail = getElement('#loginemail');
+loginemail = getElement('#loginemail');
 if (loginemail) {
     fetchRegisteredEmails();
     loginemail.addEventListener('input', verificarEmailLogin);
@@ -472,8 +474,8 @@ if (loginemail) {
 }
 
 // Adicionando eventos de input para disparar a verificação de senha
-const senhaInput = getElement('#password');
-const repetirSenhaInput = getElement('#passwordrepeat');
+senhaInput = getElement('#password');
+repetirSenhaInput = getElement('#passwordrepeat');
 
 if (senhaInput) {
     senhaInput.addEventListener('input', verificarSenhas);
