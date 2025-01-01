@@ -228,6 +228,17 @@ function showMessageModal() {
     is_sucess_register = false;
 }
 
+function showMessageModalRecupere() {
+    const modal = document.getElementById('messageModalRecupere');
+    modal.style.display = 'block';
+
+    // Fechar o modal após 3 segundos
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 3000);
+    is_sucess_register = false;
+}
+
 function executeActionAndShowModal() {
     // Supondo que 'fetchAction' seja a ação que desejamos executar
     fetch('/')
@@ -440,8 +451,8 @@ function verificarSenhas() {
 }
 
 function verificarSenhasRecupere() {
-    const novaSenha = modalRecupere.querySelector('#loginemail');
-    const repetirNovaSenha = modalRecupere.querySelector('#loginpassword');
+    const novaSenha = modalRecupere.querySelector('#loginemailrecupere');
+    const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere');
 
     if (btnRegistrarRecupere) {
         if (novaSenha.value === repetirNovaSenha.value) {
@@ -485,33 +496,63 @@ if (repetirSenhaInput) {
     repetirSenhaInput.addEventListener('input', verificarSenhas);
 }
 
-if (btnRegistrarRecupere) {
-    btnRegistrarRecupere.addEventListener('click', function() {
-        const emailInputLogin = document.querySelector('#loginemail').value;
-        const novaSenha = modalRecupere.querySelector('#loginemailrecupere').value;
-        const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere').value;
+// Função para verificar senhas no modal de recuperação e alterar a cor do botão
+function verificarSenhasRecupere() {
+    const novaSenha = modalRecupere.querySelector('#loginemailrecupere');
+    const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere');
 
-        if (novaSenha !== repetirNovaSenha) {
-            alert("As senhas não coincidem. Por favor, tente novamente.");
-            return;
+    if (novaSenha && repetirNovaSenha) {
+        if (novaSenha.value !== repetirNovaSenha.value) {
+            repetirNovaSenha.setCustomValidity("Por favor, repita a mesma senha.");
+            btnRegistrarRecupere.style.backgroundColor = "#d3d3d3"; // Cinza quando diferentes
+            btnRegistrarRecupere.style.color = "#000000";
+        } else {
+            repetirNovaSenha.setCustomValidity("");
+            btnRegistrarRecupere.style.backgroundColor = "#FF0000"; // Vermelho quando iguais
+            btnRegistrarRecupere.style.color = "#ffffff";
         }
+    }
+}
 
-        fetch('/update_password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: emailInputLogin, new_password: novaSenha })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("Senha alterada com sucesso!");
-                modalRecupere.style.display = "none";
-            } else {
-                alert("Erro ao alterar senha. " + data.error);
-            }
-        })
-        .catch(error => console.error('Erro:', error));
+// Evento para disparar a verificação de senhas no modal de recuperação
+if (modalRecupere) {
+    modalRecupere.addEventListener('input', verificarSenhasRecupere);
+}
+
+// Verificação de senhas ao clicar no botão "Registrar"
+if (btnRegistrarRecupere) {
+    btnRegistrarRecupere.addEventListener('click', function(event) {
+        event.preventDefault(); // Previne o envio do formulário se as senhas estiverem diferentes
+
+        // Checa se os avisos de validação estão presentes
+        const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere');
+        if (!repetirNovaSenha.checkValidity()) {
+            // Exibe mensagem de erro se houver
+            repetirNovaSenha.reportValidity();
+        } else {
+            // Senhas são iguais, prosseguir com a submissão do formulário
+            const emailInputLogin = document.querySelector('#loginemail').value;
+            const novaSenha = modalRecupere.querySelector('#loginemailrecupere').value;
+
+            fetch('/update_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: emailInputLogin, new_password: novaSenha })
+            })
+            .then(response => {
+                if (response.ok) {
+                    modalRecupere.style.display = "none";
+                    showMessageModalRecupere()
+                } else {
+                    alert("Erro ao alterar senha.");
+                    console.log(response.status);
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
     });
 }
+
+

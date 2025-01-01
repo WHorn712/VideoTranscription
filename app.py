@@ -119,30 +119,37 @@ def logged():
         return render_template('logged.html', username=username)
     return redirect(url_for('login'))
 
+#@app.route('/get_password', methods=['GET'])
+#def update_password():
+
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
-    data = request.json
-    email = data.get('email')
-    new_password = data.get('new_password')
+    try:
+        data = request.json
+        email = data.get('email')
+        new_password = data.get('new_password')
 
-    if not email or not new_password:
-        return jsonify({"success": False, "error": "Dados incompletos"}), 400
+        if not email or not new_password:
+            return jsonify({"success": False, "error": "Dados incompletos"}), 400
 
-    connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('SELECT id FROM users WHERE email = %s', (email,))
-        user = cursor.fetchone()
-        if not user:
-            connection.close()
-            return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
+        connection = get_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT email FROM users WHERE email = %s', (email,))
+            user = cursor.fetchone()
+            if not user:
+                connection.close()
+                return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
 
-        hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
-        cursor.execute('UPDATE users SET senha = %s WHERE email = %s', (hashed_password, email))
-        connection.commit()
-    connection.close()
+            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+            cursor.execute('UPDATE users SET senha = %s WHERE email = %s', (hashed_password, email))
+            connection.commit()
+        connection.close()
 
-    return jsonify({"success": True}), 200
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        app.logger.error(f"Error in update_password: {str(e)}")
+        return jsonify({"success": False, "error": "Internal server error"}), 500
 
 
 @app.route('/como-usar')
