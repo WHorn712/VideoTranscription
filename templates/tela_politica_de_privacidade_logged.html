@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Políticas de Privacidade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="{{ url_for('logged') }}" class="logo-button" id="logoButton">LEGENDAS</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('logged') }}">Início</a></li>
+                <li><a href="{{ url_for('como_usar_logged') }}" >Como Usar</a></li>
+                <li><a href="#">Contato</a></li>
+            </ul>
+            <div class="user-section">
+                <div class="user-image">
+                    <img src="{{ url_for('static', filename='images/user.png') }}" alt="Imagem do Usuário">
+                </div>
+                <h4>USER</h4>
+                <div class="user-buttons">
+                    <a id="loginBtn">Perfil</a>
+                    <a id="cadastrarBtn">Sair</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <br>
+    <br>
+    <div class="container">
+        <div>
+            <h2 class="txt">No site LEGENDAS, a sua privacidade é de extrema importância para nós. Esta Política de Privacidade descreve como coletamos, usamos, e protegemos suas informações pessoais ao utilizar nosso serviço.
+            </h2>
+        </div>
+        <br>
+        <h1></h1>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Informações Coletadas</h3>
+        </div>
+        <h2 class="txt">Podemos coletar informações pessoais identificáveis, como nome, e-mail, e detalhes de contato
+          quando você se registra em nosso site ou utiliza nossos serviços. Também coletamos informações não pessoais,
+          como dados de navegação e cookies, para melhorar sua experiência no site.</h2>
+        <br>
+        <br>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Uso das Informações</h3>
+        </div>
+        <h2 class="txt">As informações coletadas são utilizadas para personalizar sua experiência, processar transações,
+          melhorar nosso site, e enviar notificações relevantes sobre o serviço. Não vendemos, trocamos ou transferimos
+          suas informações pessoais para terceiros sem o seu consentimento, exceto conforme necessário para fornecer o
+          serviço.</h2>
+        <br>
+        <br>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Proteção das Informações</h3>
+        </div>
+        <h2 class="txt">Implementamos uma variedade de medidas de segurança para manter a segurança de suas informações
+          pessoais. Utilizamos criptografia, firewalls e outras tecnologias para proteger seus dados contra acesso não
+          autorizado.</h2>
+        <br>
+        <br>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Compartilhamento de Informações</h3>
+        </div>
+        <h2 class="txt">Podemos compartilhar informações com parceiros de confiança que nos auxiliam na operação do site
+          e na execução de nossos serviços, desde que esses parceiros concordem em manter essas informações confidenciais.</h2>
+        <br>
+        <br>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Seus Direitos</h3>
+        </div>
+        <h2 class="txt">Você tem o direito de acessar, corrigir ou excluir suas informações pessoais a qualquer momento.
+          Para isso, entre em contato conosco através do e-mail fornecido.</h2>
+        <br>
+        <br>
+        <br>
+        <div>
+            <h3 style="font-size: 2rem; color: #000000; font-weight: bold; font-family: 'Arial', sans-serif;">Alterações na Política de Privacidade</h3>
+        </div>
+        <h2 class="txt">Reservamo-nos o direito de modificar esta política de privacidade a qualquer momento. Quaisquer
+          alterações serão publicadas nesta página e notificadas por e-mail, quando apropriado.</h2>
+    </div>
+    <br>
+    <br>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="{{ url_for('termos_de_servico_logged') }}">Termos de Serviço</a>
+                <a href="{{ url_for('politica_de_privacidade_logged') }}">Política de Privacidade</a>
+                <a href="#">Contato</a>
+                <a href="{{ url_for('sobre_nos_logged') }}">Sobre Nós</a>
+            </div>
+            <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Contato -->
+    <div id="myModalContato" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Suporte</h2>
+            <br>
+            <br>
+            <h2 class="txt centralizado">E-mail: wellihorn616@gmail.com</h2>
+            <br>
+            <h2 class="txt centralizado">whatsaap: (51)998889364</h2>
+
+        </div>
+    </div>
+
+    <!-- Inclua o modal de cadastro -->
+    {% include '_register_modal.html' %}
+
+    <!-- Inclua o modal de login -->
+    {% include '_login_modal.html' %}
+
+
+    <div id="myModalSuporte" class="modalSuporte">
+        <div class="modalSuporte-content">
+            <span class="close">&times;</span>
+            <h2 class="txt centralizado">Cadastro</h2>
+
+        </div>
+    </div>
+
+    <!-- Modal de price -->
+    <div id="myModalPrice" class="modalPrice">
+        <div class="modalPrice-content">
+            <span class="close">&times;</span>
+            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
+            svdcvdcvbdvsdvsdfv</h2>
+            <br>
+            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
+            svdcvdcvbdvsdvsdffdvdfvdfvkjsdnfvljksdnfvçskldfnvkçsdlfv dfkjnsdfkjbnsdlfkbmsdfbdsfb sdflkvbsndçfkjnvsdfçk
+                lvmsd;lkmv;lsdkfmvs;lkdfbkçsjdfbsdfb dsf.kjbnsdkjfçnbsdlçkfmbsdfbv</h2>
+            <br>
+            <br>
+            <div class="price-boxes">
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price1.png') }}" alt="Price Option 1" width="120">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price2.png') }}" alt="Price Option 2" width="150">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price3.png') }}" alt="Price Option 3" width="150">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+        </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

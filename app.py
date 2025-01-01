@@ -152,17 +152,33 @@ def update_password():
         return jsonify({"success": False, "error": "Internal server error"}), 500
 
 
+@app.route('/como-usar-logged')
+def como_usar_logged():
+    return render_template('tela_como_usar_logged.html')
+
 @app.route('/como-usar')
 def como_usar():
     return render_template('tela_como_usar.html')
+
+@app.route('/termos-de-servico-logged')
+def termos_de_servico_logged():
+    return render_template('tela_termos_de_servico_logged.html')
 
 @app.route('/termos-de-servico')
 def termos_de_servico():
     return render_template('tela_termos_de_servico.html')
 
+@app.route('/politica-de-privacidade-logged')
+def politica_de_privacidade_logged():
+    return render_template('tela_politica_de_privacidade_logged.html')
+
 @app.route('/politica-de-privacidade')
 def politica_de_privacidade():
     return render_template('tela_politica_de_privacidade.html')
+
+@app.route('/sobre-nos-logged')
+def sobre_nos_logged():
+    return render_template('tela_sobre_nos_logged.html')
 
 @app.route('/sobre-nos')
 def sobre_nos():
