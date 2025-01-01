@@ -146,9 +146,18 @@ function displayThumbnail(videoId) {
     `;
 }
 
+// Função para limpar inputs de um modal
+function limparInputs(modal) {
+    const inputs = modal.querySelectorAll('input');
+    inputs.forEach(input => input.value = ""); // Limpa os valores dos inputs
+}
+
 // Funções para abrir modais
 function abrirModal(modal) {
-    if (modal) modal.style.display = "block";
+    if (modal) {
+        limparInputs(modal);  // Limpa os inputs ao abrir o modal
+        modal.style.display = "block";
+    }
 }
 
 function abrirModalContato() {
@@ -288,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (modalRecupere) {
                     modalRecupere.style.display = "block";
+                    limparInputs(modalRecupere);
                 } else {
                     console.error("Modal de recuperação não encontrado.");
                 }

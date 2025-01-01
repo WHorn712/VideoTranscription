@@ -3,25 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo</title>
+    <title>Transcrição de Vídeo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
+    <header class="header">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo-button" id="logoButton">LEGENDAS</a>
+            <ul class="nav-links">
                 <li><a href="{{ url_for('index') }}">Início</a></li>
-                <li><a href="{{ url_for('como_usar') }}">Como Usar</a></li>
-                <li><a href="{{ url_for('index') }}">Sair</a></li>
+                <li><a href="{{ url_for('como_usar') }}" >Como Usar</a></li>
+                <li><a href="#">Contato</a></li>
             </ul>
+            <div class="user-section">
+                <div class="user-image">
+                    <img src="{{ url_for('static', filename='images/user.png') }}" alt="Imagem do Usuário">
+                </div>
+                <h4>USER</h4>
+                <div class="user-buttons">
+                    <a id="loginBtn">Perfil</a>
+                    <a id="cadastrarBtn">Sair</a>
+                </div>
+            </div>
         </nav>
     </header>
-    <main>
-        <h1>Bem-vindo, {{ username }}!</h1>
-        <p>Você está logado com sucesso.</p>
-    </main>
-    <footer>
-        <p>© 2024 Horn Corp. Todos os direitos reservados.</p>
+
+
+    <div class="container">
+        <div class="main-content">
+            <h1>TESTANDO...</h1>
+            <p class="subtitle">CREATING A VIDEO TRANSCRIPTION FOR CUTS</p>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="text" id="videoLink" placeholder="Cole o link do vídeo aqui">
+                    <button id="fetch-video">
+                        <img src="{{ url_for('static', filename='images/search.png') }}" alt="Ícone de lupa" style="width: 32px; height: 32px;">
+                    </button>
+                </div>
+            </div>
+            <input type="file" id="fileInput" accept="video/*" style="display: none;" />
+            <p><button class="custom-button new-action-btn" id="indexarBtn">INDEXAR VÍDEO</button></p>
+            <canvas id="canvas" style="display: none; margin: 0 auto; border: 1px solid #ccc;"></canvas>
+            <div id="video-info" style="text-align: center; margin-top: 20px;"></div>
+            <br>
+            <p><button class="custom-button new-action-btn" id="transcreverBtn">TRANSCREVER</button></p>
+        </div>
+        <br>
+        <div>
+            <h2 class="txt">O YouTube é a maior plataforma de compartilhamento de vídeos do mundo e oferece uma excelente experiência para o usuário enviar, visualizar e compartilhar vídeos. O que ele não pode fornecer é o download de um vídeo do YouTube. É por isso que o yt1d está aqui para te ajudar!
+                Com nosso downloader de vídeos do YouTube, você pode pesquisar vídeos e baixá-los gratuitamente! Você pode baixar vídeos do YouTube de alta qualidade em qualidade MP4, MP3, SQ, HD, Full HD e outros formatos. Nosso downloader pode ser usado tanto no PC quanto no celular, permitindo que você use em qualquer lugar!
+            </h2>
+        </div>
+        <br>
+        <br>
+        <div class="box-container">
+            <div class="box">
+                <img src="{{ url_for('static', filename='images/type1.png') }}" alt="" width="80">
+                <div class="txt" style="margin-top: 20px; padding-left: 10px;">
+                    Esse é apenas um teste 123, nesse text
+                    <p style="padding-left: 20px;">ssdjfbsdjkf sdfs dfgdfg dfgdf</p>
+                </div>
+            </div>
+            <div class="box">
+                <img src="{{ url_for('static', filename='images/type2.png') }}" alt="" width="80">
+                <div class="txt" style="margin-top: 20px; padding-left: 10px;">esse é apenas um teste 123, nesse text o vou adicionar todas
+                os benfícios do plano de assinante.dgdfg sdfgsdfg sdfgsdfgsd fgdfgsd fgxcvzxcvzxc vzxcvzxcvxcvzxcvzxcv
+                sdgfdfgsdfg</div>
+            </div>
+            <div class="box">
+                <img src="{{ url_for('static', filename='images/type3.png') }}" alt="" width="80">
+                <div class="txt" style="margin-top: 20px; padding-left: 10px;">esse é apenas um teste 123, nesse text o vou adicionar todas
+                os benfícios do plano de assinante.dgdfg sdfgsdfg sdfgsdfgsd fgdfgsd fgxcvzxcvzxc vzxcvzxcvxcvzxcvzxcv
+                sdgfdfgsdfg</div>
+            </div>
+        </div>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="image-treatment">
+            <h2>FAÇA ALGO POR VOCÊ...</h2>
+            <br>
+            <br>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex1.png') }}" alt="Imagem Sem Tratamento" width="300">
+                </div>
+                <img src="{{ url_for('static', filename='images/flecha.png') }}" alt="Imagem Com Tratamento" width="150">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex1leg.png') }}" alt="Imagem Com Tratamento" width="300">
+                </div>
+            </div>
+            <br>
+            <br>
+            <h2 class="red-line" style="position: relative;"></h2>
+            <br>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex2.png') }}" alt="Imagem Sem Tratamento" width="300">
+                </div>
+                <img src="{{ url_for('static', filename='images/flecha.png') }}" alt="Imagem Com Tratamento" width="150">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex2leg.png') }}" alt="Imagem Com Tratamento" width="300">
+                </div>
+            </div>
+            <br>
+            <br>
+            <h2 class="red-line" style="position: relative;"></h2>
+            <br>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex3.png') }}" alt="Imagem Sem Tratamento" width="300">
+                </div>
+                <img src="{{ url_for('static', filename='images/flecha.png') }}" alt="Imagem Com Tratamento" width="150">
+                <div style="text-align: center;">
+                    <img src="{{ url_for('static', filename='images/ex3leg.png') }}" alt="Imagem Com Tratamento" width="300">
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="price-boxes">
+                <div class="price-box">
+                    <img src="{{ url_for('static', filename='images/price1.png') }}" alt="" width="120">
+                    <a class="custom-button sign-button">Assinar</a>
+                </div>
+                <div class="price-box">
+                    <img src="{{ url_for('static', filename='images/price2.png') }}" alt="" width="150">
+                    <a class="custom-button sign-button">Assinar</a>
+                </div>
+                <div class="price-box">
+                    <img src="{{ url_for('static', filename='images/price3.png') }}" alt="" width="150">
+                    <a class="custom-button sign-button">Assinar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="{{ url_for('termos_de_servico') }}">Termos de Serviço</a>
+                <a href="{{ url_for('politica_de_privacidade') }}">Política de Privacidade</a>
+                <a href="#">Contato</a>
+                <a href="{{ url_for('sobre_nos') }}">Sobre Nós</a>
+            </div>
+            <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
+        </div>
     </footer>
+
+    <!-- Modal de Contato -->
+    <div id="myModalContato" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Suporte</h2>
+            <br>
+            <br>
+            <h2 class="txt centralizado">E-mail: wellihorn616@gmail.com</h2>
+            <br>
+            <h2 class="txt centralizado">whatsaap: (51)998889364</h2>
+
+        </div>
+    </div>
+
+    <!-- Inclua o modal de cadastro -->
+    {% include '_register_modal.html' %}
+
+    <!-- Inclua o modal de login -->
+    {% include '_login_modal.html' %}
+
+    {% include '_recupere_modal.html' %}
+
+
+    <div id="myModalSuporte" class="modalSuporte">
+        <div class="modalSuporte-content">
+            <span class="close">&times;</span>
+            <h2 class="txt centralizado">Cadastro</h2>
+
+        </div>
+    </div>
+
+    <!-- Modal de Mensagem -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <p>CADASTRADO ✅</p>
+        </div>
+    </div>
+
+    <!-- Modal de Mensagem -->
+    <div id="messageModalRecupere" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <p>SENHA ALTERADA ✅</p>
+        </div>
+    </div>
+
+    <!-- Modal de price -->
+    <div id="myModalPrice" class="modalPrice">
+        <div class="modalPrice-content">
+            <span class="close">&times;</span>
+            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
+            svdcvdcvbdvsdvsdfv</h2>
+            <br>
+            <h2 class="txt centralizado">Cadsfdfvbzdvbzdfvbzdvbzvbzvbzdfbvdastro
+            svdcvdcvbdvsdvsdffdvdfvdfvkjsdnfvljksdnfvçskldfnvkçsdlfv dfkjnsdfkjbnsdlfkbmsdfbdsfb sdflkvbsndçfkjnvsdfçk
+                lvmsd;lkmv;lsdkfmvs;lkdfbkçsjdfbsdfb dsf.kjbnsdkjfçnbsdlçkfmbsdfbv</h2>
+            <br>
+            <br>
+            <div class="price-boxes">
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price1.png') }}" alt="Price Option 1" width="120">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price2.png') }}" alt="Price Option 2" width="150">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+            <div class="price-box">
+                <img src="{{ url_for('static', filename='images/price3.png') }}" alt="Price Option 3" width="150">
+                <a class="custom-button sign-button">Assinar</a>
+            </div>
+        </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
+
