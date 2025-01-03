@@ -30,6 +30,13 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
+
+@app.route('/get-username')
+def get_username():
+    # Retorne uma string como um JSON ou texto simples
+    return jsonify(message=session['username'])
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     error_message = None

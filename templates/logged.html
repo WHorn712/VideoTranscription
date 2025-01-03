@@ -20,10 +20,10 @@
                 <div class="user-image">
                     <img src="{{ url_for('static', filename='images/user.png') }}" alt="Imagem do Usuário">
                 </div>
-                <h4>USER</h4>
+                <h4 id="usernameLogged">USER</h4>
                 <div class="user-buttons">
                     <a id="loginBtn">Perfil</a>
-                    <a id="cadastrarBtn">Sair</a>
+                    <a id="btnExit">Sair</a>
                 </div>
             </div>
         </nav>
@@ -169,12 +169,16 @@
         </div>
     </div>
 
-    <!-- Inclua o modal de cadastro -->
-    {% include '_register_modal.html' %}
+    <!-- Inclua o modal de sair -->
+    {% include '_sair_modal.html' %}
 
-    <!-- Inclua o modal de login -->
+    <!-- Inclua o modal de perfil -->
     {% include '_login_modal.html' %}
 
+    <!-- Inclua o modal de perfil -->
+    {% include '_register_modal.html' %}
+
+    <!-- Inclua o modal de perfil -->
     {% include '_recupere_modal.html' %}
 
 

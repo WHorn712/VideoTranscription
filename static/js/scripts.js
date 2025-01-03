@@ -108,6 +108,7 @@ if (btnLogin) {
     });
 }
 
+
 if (getElement('#fetch-video')) {
     getElement('#fetch-video').addEventListener('click', function() {
         const url = getElement('#videoLink').value;
@@ -154,9 +155,13 @@ function limparInputs(modal) {
 
 // Funções para abrir modais
 function abrirModal(modal) {
+    console.log(modal)
     if (modal) {
         limparInputs(modal);  // Limpa os inputs ao abrir o modal
         modal.style.display = "block";
+    }
+    else{
+        console.log("bnao encontrado");
     }
 }
 
@@ -218,6 +223,12 @@ function verificarCampos() {
     }
 }
 
+function abrirModalExit() {
+    modalExit.style.display = "block";
+}
+
+
+
 if (form) {
     form.addEventListener('input', verificarCampos);
 }
@@ -276,6 +287,48 @@ function toggleLoadingSpinner(show) {
         loadingSpinner.style.display = show ? "block" : "none";
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Variáveis para modais
+    var modalExit = document.querySelector("#myModalExit");
+    var btnExit = document.querySelector("#btnExit");
+    var btnYes = document.querySelector("#btnYes");
+    var btnNo = document.querySelector("#btnNo");
+    var spanClose = modalExit.querySelector(".close");
+
+    // Função para abrir o modal de saída
+    function abrirModalExit() {
+        modalExit.style.display = "block";
+    }
+
+    // Evento para abrir o modal ao clicar em "Sair"
+    if (btnExit) {
+        btnExit.addEventListener('click', function(event) {
+            event.preventDefault();
+            abrirModalExit();
+        });
+    }
+
+    // Evento para fechar o modal ao clicar em "Não" ou no ícone de fechar
+    if (btnNo) {
+        btnNo.addEventListener('click', function() {
+            modalExit.style.display = "none";
+        });
+    }
+
+    if (spanClose) {
+        spanClose.addEventListener('click', function() {
+            modalExit.style.display = "none";
+        });
+    }
+
+    // Evento para confirmar a saída e redirecionar para index.html
+    if (btnYes) {
+        btnYes.addEventListener('click', function() {
+            window.location.href = '/'; // Redireciona para a página inicial
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // Duplicação desnecessária destas variáveis
@@ -409,6 +462,20 @@ emailInput.addEventListener('input', function () {
 if (form) {
     form.addEventListener('input', verificarCampos);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Faz uma solicitação para o servidor para obter a string
+    fetch('/get-username')
+        .then(response => response.json())
+        .then(data => {
+            // Insere a string no elemento desejado
+            const messageElement = document.getElementById('usernameLogged');
+            if (messageElement) {
+                messageElement.textContent = data.message;
+            }
+        })
+        .catch(error => console.error('Erro ao obter a mensagem do usuário:', error));
+});
 
 function verificarSenhasLogin() {
     const email = getElement('#loginemail').value;
