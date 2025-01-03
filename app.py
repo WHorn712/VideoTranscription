@@ -159,6 +159,10 @@ def update_password():
         return jsonify({"success": False, "error": "Internal server error"}), 500
 
 
+@app.route('/perfil-logged')
+def perfil_logged():
+    return render_template('tela_perfil.html')
+
 @app.route('/como-usar-logged')
 def como_usar_logged():
     return render_template('tela_como_usar_logged.html')
