@@ -23,7 +23,7 @@
                 <h4 id="usernameLogged">USER</h4>
                 <div class="user-buttons">
                     <a href="{{ url_for('perfil_logged') }}">Perfil</a>
-                    <a id="cadastrarBtn">Sair</a>
+                    <a id="btnExit">Sair</a>
                 </div>
             </div>
         </nav>
@@ -125,6 +125,9 @@
 
     <!-- Inclua o modal de login -->
     {% include '_login_modal.html' %}
+
+    <!-- Inclua o modal de sair -->
+    {% include '_sair_modal.html' %}
 
 
     <div id="myModalSuporte" class="modalSuporte">

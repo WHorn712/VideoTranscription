@@ -114,10 +114,13 @@ def login():
 
         if user and check_password_hash(user[1], password):
             session['username'] = user[0]
+            session['user_email'] = email
             return '', 200  # Retorna código 200 para sucesso
         else:
             return 'Invalid credentials', 401  # Retorna código 401 para falha
     return render_template('index.html')
+
+
 
 @app.route('/logged')
 def logged():
@@ -161,7 +164,34 @@ def update_password():
 
 @app.route('/perfil-logged')
 def perfil_logged():
-    return render_template('tela_perfil.html')
+    # Determine o email do usuário a partir da sessão
+    email = session.get('user_email')  # Deve garantir que este valor está na sessão
+    if not email:
+        return redirect(url_for('login'))  # Redirecione para login se não houver email na sessão
+
+    # Recupere as informações do usuário do banco de dados
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT nome, email, senha, typeSignature FROM users WHERE email = %s', (email,))
+        user_data = cursor.fetchone()
+    connection.close()
+
+    if not user_data:
+        return "Usuário não encontrado", 404
+
+    # Crie um dicionário de usuário com os dados recuperados
+    assinatura_text = ""
+    if user_data[3] == 0:
+        assinatura_text = "SEM PLANO"
+    user = {
+        "nome": user_data[0],
+        "email": user_data[1],
+        "senha": user_data[2],
+        "assinatura": assinatura_text
+    }
+
+    # Renderize o template e passe o dicionário do usuário
+    return render_template('tela_perfil.html', user=user)
 
 @app.route('/como-usar-logged')
 def como_usar_logged():

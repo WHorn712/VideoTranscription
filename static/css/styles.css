@@ -716,3 +716,34 @@
     background-color: #c0c0c0; /* Cor levemente alterada no hover */
     transform: scale(1.05); /* Pequeno aumento no hover */
 }
+
+.profile-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+    font-weight: bold; /* Destaca o rótulo */
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    color: #333;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #ffaeae; /* Cor da borda ao focar */
+}
