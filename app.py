@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, session
 import pymysql
 from flask import request, redirect, url_for
-from jupyter_events.cli import console
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import stripe
