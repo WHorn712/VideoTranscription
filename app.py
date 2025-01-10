@@ -4,11 +4,14 @@ from flask import request, redirect, url_for
 from jupyter_events.cli import console
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import stripe
 
 app = Flask(__name__)
 
 secret_key = os.urandom(24)
 app.secret_key = os.environ.get('SECRET_KEY', secret_key)
+
+stripe.api_key = 'sua_chave_secreta_do_stripe'
 
 
 # Configurações do banco de dados
@@ -224,6 +227,10 @@ def sobre_nos_logged():
 @app.route('/sobre-nos')
 def sobre_nos():
     return render_template('tela_sobre_nos.html')
+
+@app.route('/pagamento')
+def pagamento():
+    return render_template('pagamento.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

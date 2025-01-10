@@ -36,6 +36,8 @@ var video = document.createElement("video");
 var btnContatoRodape = getElement('.footer-links a:nth-child(3)');
 var emailExistenteBD = false;
 
+
+
 // Seleciona o botão de registrar do modal de recuperação
 var btnRegistrarRecupere = modalRecupere ? modalRecupere.querySelector('button[type="submit"]') : null;
 
@@ -631,5 +633,27 @@ if (btnRegistrarRecupere) {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona o elemento de entrada e o botão de assinatura utilizando as funções existentes
+    var signatureInput = getElement('#signature');
+    var signButton = getElement('.custom-button.sign-button');
+    console.log(signatureInput.value);
+
+    // Função para atualizar o texto do botão de assinatura
+    function updateSignButtonText() {
+        if (signatureInput.value === 'SEM PLANO') {
+            signButton.textContent = 'Assinar';
+        } else {
+            signButton.textContent = 'Mudar Plano';
+        }
+    }
+
+    // Aplica a função imediatamente para definir o texto inicial
+    updateSignButtonText();
+});
+
+
+
 
 

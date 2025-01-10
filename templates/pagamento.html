@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+        #card-element, #card-expiry-element, #card-cvc-element {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <a href="{{ url_for('logged') }}" class="logo-button" id="logoButton">LEGENDAS</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('logged') }}">Início</a></li>
+                <li><a href="{{ url_for('como_usar_logged') }}">Como Usar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="profile-form">
+            <h2 class="txt">Informações de Pagamento</h2>
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="plan">Escolha seu Plano:</label>
+                    <select id="plan" name="plan">
+                        <option value="basic">Mensal - R$19,90/mês</option>
+                        <option value="standard">Anual - R$58,90/ano</option>
+                        <option value="premium">Avulso - R$3,90/mês</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="name">Nome Completo:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Endereço de Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <!-- Card Number Element -->
+                <div class="form-group">
+                    <label for="card-element">Número do Cartão:</label>
+                    <div id="card-element"></div>
+                </div>
+                <!-- Expiry Date Element -->
+                <div class="form-group">
+                    <label for="card-expiry-element">Data de Validade:</label>
+                    <div id="card-expiry-element"></div>
+                </div>
+                <!-- CVC Element -->
+                <div class="form-group">
+                    <label for="card-cvc-element">Código CVC:</label>
+                    <div id="card-cvc-element"></div>
+                </div>
+                <div id="card-errors" role="alert"></div>
+                <button type="submit" id="submit" class="custom-button">Pagar</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="footer-text">© 2024 Horn Corp. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Inicialize o Stripe com sua chave pública
+        const stripe = Stripe('SUA_CHAVE_PUBLICA_STRIPE');
+
+        // Crie uma instância do Stripe Elements
+        const elements = stripe.elements();
+
+        // Estilo para os elementos
+        const style = {
+            base: {
+                color: '#32325d',
+                fontFamily: 'Arial, sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a'
+            }
+        };
+
+        // Crie elementos separados
+        const card = elements.create('cardNumber', {style: style});
+        const cardExpiry = elements.create('cardExpiry', {style: style});
+        const cardCvc = elements.create('cardCvc', {style: style});
+
+        // Monte os elementos no DOM
+        card.mount('#card-element');
+        cardExpiry.mount('#card-expiry-element');
+        cardCvc.mount('#card-cvc-element');
+
+        // Manipule erros em tempo real nos elementos
+        const errorElement = document.getElementById('card-errors');
+        card.addEventListener('change', function(event) {
+            if (event.error) {
+                errorElement.textContent = event.error.message;
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+
+        // Manipule o envio do formulário
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const {token, error} = await stripe.createToken(card);
+
+            if (error) {
+                errorElement.textContent = error.message;
+            } else {
+                stripeTokenHandler(token);
+            }
+        });
+
+        // Envia o token para o servidor
+        function stripeTokenHandler(token) {
+            const form = document.getElementById('payment-form');
+            const hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submete o formulário
+            form.submit();
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
