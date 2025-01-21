@@ -78,6 +78,7 @@ def register():
                     cursor.execute('INSERT INTO users (nome, email, senha, typeSignature) VALUES (%s, %s, %s, %s)',
                                    (name, email, hashed_senha, typeSignature))
                     connection.commit()
+                    print("cadastrado")
                 connection.close()
                 return redirect(url_for('index'))
 
