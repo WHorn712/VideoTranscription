@@ -1,23 +1,32 @@
 from flask import Flask, render_template, jsonify, session
 import pymysql
+from pymysql.cursors import DictCursor
 from flask import request, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import stripe
+from urllib.parse import urlparse
+
+
 
 app = Flask(__name__)
+
+db_url = os.environ.get('JAWSDB_URL')
 
 secret_key = os.urandom(24)
 app.secret_key = os.environ.get('SECRET_KEY', secret_key)
 
 stripe.api_key = 'sua_chave_secreta_do_stripe'
 
+url = urlparse(db_url)
 
-# Configurações do banco de dados
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'rootsun5219'
-app.config['MYSQL_DB'] = 'project_transcription_web'
+
+
+
+app.config['MYSQL_HOST'] = url.hostname
+app.config['MYSQL_USER'] = url.username
+app.config['MYSQL_PASSWORD'] = url.password
+app.config['MYSQL_DB'] = url.path[1:]
 
 # Função para conectar ao banco
 def get_db_connection():
@@ -25,7 +34,8 @@ def get_db_connection():
         host=app.config['MYSQL_HOST'],
         user=app.config['MYSQL_USER'],
         password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
+        db=app.config['MYSQL_DB'],
+        cursorclass=DictCursor
     )
 
 @app.route('/')
