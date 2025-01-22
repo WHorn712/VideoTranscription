@@ -12,7 +12,6 @@ app.secret_key = os.environ.get('SECRET_KEY', secret_key)
 
 stripe.api_key = 'sua_chave_secreta_do_stripe'
 
-
 # Configurações do banco de dados
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
