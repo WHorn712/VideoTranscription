@@ -12,7 +12,7 @@ app.secret_key = os.environ.get('SECRET_KEY', secret_key)
 stripe.api_key = 'sua_chave_secreta_do_stripe'
 
 # Configurações do banco de dados
-DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1)
 engine = create_engine(DATABASE_URL, echo=True)
 
 # Função para conectar ao banco
