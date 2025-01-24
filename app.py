@@ -1,7 +1,6 @@
-from flask import Flask, render_template, jsonify, session
-import pymysql
-from flask import request, redirect, url_for
+from flask import Flask, render_template, jsonify, session, request, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import create_engine, text
 import os
 import stripe
 
@@ -13,19 +12,12 @@ app.secret_key = os.environ.get('SECRET_KEY', secret_key)
 stripe.api_key = 'sua_chave_secreta_do_stripe'
 
 # Configurações do banco de dados
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'rootsun5219'
-app.config['MYSQL_DB'] = 'project_transcription_web'
+DATABASE_URL = os.environ.get('DATABASE_URL')
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Função para conectar ao banco
 def get_db_connection():
-    return pymysql.connect(
-        host=app.config['MYSQL_HOST'],
-        user=app.config['MYSQL_USER'],
-        password=app.config['MYSQL_PASSWORD'],
-        db=app.config['MYSQL_DB']
-    )
+    return engine.connect()
 
 @app.route('/')
 def index():
@@ -34,8 +26,7 @@ def index():
 
 @app.route('/get-username')
 def get_username():
-    # Retorne uma string como um JSON ou texto simples
-    return jsonify(message=session['username'])
+    return jsonify(message=session.get('username', ''))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -53,9 +44,8 @@ def register():
             error_message = "POR FAVOR, REPITA SENHA CORRETAMENTE"
         else:
             connection = get_db_connection()
-            with connection.cursor() as cursor:
-                cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
-                user = cursor.fetchone()
+            result = connection.execute(text('SELECT senha FROM users WHERE email = :email'), {'email': email})
+            user = result.fetchone()
             connection.close()
 
             if user:
@@ -63,10 +53,8 @@ def register():
             else:
                 hashed_senha = generate_password_hash(password, method='pbkdf2:sha256')
                 connection = get_db_connection()
-                with connection.cursor() as cursor:
-                    cursor.execute('INSERT INTO users (nome, email, senha, typeSignature) VALUES (%s, %s, %s, %s)',
-                                   (name, email, hashed_senha, typeSignature))
-                    connection.commit()
+                connection.execute(text('INSERT INTO users (nome, email, senha, typeSignature) VALUES (:name, :email, :hashed_senha, :typeSignature)'),
+                                   {'name': name, 'email': email, 'hashed_senha': hashed_senha, 'typeSignature': typeSignature})
                 connection.close()
                 return redirect(url_for('index'))
 
@@ -75,12 +63,10 @@ def register():
 @app.route('/get_registered_emails', methods=['GET'])
 def get_registered_emails():
     connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('SELECT email FROM users')
-        emails = cursor.fetchall()
+    result = connection.execute(text('SELECT email FROM users'))
+    emails = result.fetchall()
     connection.close()
 
-    # Converte a lista de tuplas para uma lista simples de strings
     email_list = [email[0] for email in emails]
     return jsonify(email_list)
 
@@ -91,9 +77,8 @@ def verify_user_password():
     password = data.get('password')
 
     connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('SELECT senha FROM users WHERE email = %s', (email,))
-        user = cursor.fetchone()
+    result = connection.execute(text('SELECT senha FROM users WHERE email = :email'), {'email': email})
+    user = result.fetchone()
     connection.close()
 
     if user and check_password_hash(user[0], password):
@@ -108,20 +93,17 @@ def login():
         password = request.form['password']
 
         connection = get_db_connection()
-        with connection.cursor() as cursor:
-            cursor.execute('SELECT nome, senha FROM users WHERE email = %s', (email,))
-            user = cursor.fetchone()
+        result = connection.execute(text('SELECT nome, senha FROM users WHERE email = :email'), {'email': email})
+        user = result.fetchone()
         connection.close()
 
         if user and check_password_hash(user[1], password):
             session['username'] = user[0]
             session['user_email'] = email
-            return '', 200  # Retorna código 200 para sucesso
+            return '', 200
         else:
-            return 'Invalid credentials', 401  # Retorna código 401 para falha
+            return 'Invalid credentials', 401
     return render_template('index.html')
-
-
 
 @app.route('/logged')
 def logged():
@@ -129,10 +111,6 @@ def logged():
     if username:
         return render_template('logged.html', username=username)
     return redirect(url_for('login'))
-
-#@app.route('/get_password', methods=['GET'])
-#def update_password():
-
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
@@ -145,16 +123,15 @@ def update_password():
             return jsonify({"success": False, "error": "Dados incompletos"}), 400
 
         connection = get_db_connection()
-        with connection.cursor() as cursor:
-            cursor.execute('SELECT email FROM users WHERE email = %s', (email,))
-            user = cursor.fetchone()
-            if not user:
-                connection.close()
-                return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
+        result = connection.execute(text('SELECT email FROM users WHERE email = :email'), {'email': email})
+        user = result.fetchone()
+        if not user:
+            connection.close()
+            return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
 
-            hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
-            cursor.execute('UPDATE users SET senha = %s WHERE email = %s', (hashed_password, email))
-            connection.commit()
+        hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+        connection.execute(text('UPDATE users SET senha = :hashed_password WHERE email = :email'),
+                           {'hashed_password': hashed_password, 'email': email})
         connection.close()
 
         return jsonify({"success": True}), 200
@@ -162,28 +139,21 @@ def update_password():
         app.logger.error(f"Error in update_password: {str(e)}")
         return jsonify({"success": False, "error": "Internal server error"}), 500
 
-
 @app.route('/perfil-logged')
 def perfil_logged():
-    # Determine o email do usuário a partir da sessão
-    email = session.get('user_email')  # Deve garantir que este valor está na sessão
+    email = session.get('user_email')
     if not email:
-        return redirect(url_for('login'))  # Redirecione para login se não houver email na sessão
+        return redirect(url_for('login'))
 
-    # Recupere as informações do usuário do banco de dados
     connection = get_db_connection()
-    with connection.cursor() as cursor:
-        cursor.execute('SELECT nome, email, senha, typeSignature FROM users WHERE email = %s', (email,))
-        user_data = cursor.fetchone()
+    result = connection.execute(text('SELECT nome, email, senha, typeSignature FROM users WHERE email = :email'), {'email': email})
+    user_data = result.fetchone()
     connection.close()
 
     if not user_data:
         return "Usuário não encontrado", 404
 
-    # Crie um dicionário de usuário com os dados recuperados
-    assinatura_text = ""
-    if user_data[3] == 0:
-        assinatura_text = "SEM PLANO"
+    assinatura_text = "SEM PLANO" if user_data[3] == 0 else "COM PLANO"
     user = {
         "nome": user_data[0],
         "email": user_data[1],
@@ -191,7 +161,6 @@ def perfil_logged():
         "assinatura": assinatura_text
     }
 
-    # Renderize o template e passe o dicionário do usuário
     return render_template('tela_perfil.html', user=user)
 
 @app.route('/como-usar-logged')
