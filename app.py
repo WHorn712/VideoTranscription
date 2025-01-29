@@ -1,15 +1,16 @@
+import os
+import stripe
 from flask import Flask, render_template, jsonify, session, request, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine, text
-import os
-import stripe
 
 app = Flask(__name__)
 
-secret_key = os.urandom(24)
-app.secret_key = os.environ.get('SECRET_KEY', secret_key)
+# Configurar a chave secreta do Flask a partir da variável de ambiente
+app.secret_key = os.environ.get('SECRET_KEY')
 
-stripe.api_key = 'sua_chave_secreta_do_stripe'
+# Configurar a chave de API do Stripe a partir da variável de ambiente
+stripe.api_key = os.environ.get('STRIPE_API_KEY')
 
 # Configurações do banco de dados
 DATABASE_URL = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1)
@@ -22,6 +23,8 @@ def get_db_connection():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# Resto do código permanece o mesmo...
 
 
 @app.route('/get-username')
