@@ -290,52 +290,7 @@ function toggleLoadingSpinner(show) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Certifique-se de que o modal exista
-    var modalExit = document.querySelector("#myModalExit");
 
-    if (modalExit) {
-        var btnExit = document.querySelector("#btnExit");
-        var btnYes = document.querySelector("#btnYes");
-        var btnNo = document.querySelector("#btnNo");
-        var spanClose2 = modalExit.querySelector(".close");
-
-        // Função para abrir o modal de saída
-        function abrirModalExit() {
-            modalExit.style.display = "block";
-        }
-
-        // Evento para abrir o modal ao clicar em "Sair"
-        if (btnExit) {
-            btnExit.addEventListener('click', function(event) {
-                event.preventDefault();
-                abrirModalExit();
-            });
-        }
-
-        // Evento para fechar o modal ao clicar em "Não" ou no ícone de fechar
-        if (btnNo) {
-            btnNo.addEventListener('click', function() {
-                modalExit.style.display = "none";
-            });
-        }
-
-        if (spanClose2) {
-            spanClose.addEventListener('click', function() {
-                modalExit.style.display = "none";
-            });
-        }
-
-        // Evento para confirmar a saída e redirecionar para index.html
-        if (btnYes) {
-            btnYes.addEventListener('click', function() {
-                window.location.href = '/'; // Redireciona para a página inicial
-            });
-        }
-    } else {
-        console.error("Modal '#myModalExit' não encontrado.");
-    }
-});
 
 document.addEventListener('DOMContentLoaded', function() {
     // Duplicação desnecessária destas variáveis
