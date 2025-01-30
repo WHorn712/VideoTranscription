@@ -379,7 +379,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     });
 });
 
-
+/get_registered_emails
 
 // Função para buscar e-mails ao abrir o modal
 function fetchRegisteredEmails() {
@@ -593,6 +593,8 @@ if (btnRegistrarRecupere) {
         }
     });
 }
+
+
 
 
 

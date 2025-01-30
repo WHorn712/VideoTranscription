@@ -2,7 +2,8 @@ import os
 import stripe
 from flask import Flask, render_template, jsonify, session, request, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import create_engine, text
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 
@@ -13,24 +14,27 @@ app.secret_key = os.environ.get('SECRET_KEY')
 stripe.api_key = os.environ.get('STRIPE_API_KEY')
 
 # Configurações do banco de dados
-DATABASE_URL = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1)
-engine = create_engine(DATABASE_URL, echo=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Função para conectar ao banco
-def get_db_connection():
-    return engine.connect()
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+# Definição do modelo de usuário
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    senha = db.Column(db.String(255), nullable=False)
+    typeSignature = db.Column(db.Integer)
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Resto do código permanece o mesmo...
-
-
 @app.route('/get-username')
 def get_username():
     return jsonify(message=session.get('username', ''))
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -46,31 +50,22 @@ def register():
         if password != repeatpassword:
             error_message = "POR FAVOR, REPITA SENHA CORRETAMENTE"
         else:
-            connection = get_db_connection()
-            result = connection.execute(text('SELECT senha FROM users WHERE email = :email'), {'email': email})
-            user = result.fetchone()
-            connection.close()
-
-            if user:
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
                 error_message = 'E-MAIL EXISTENTE'
             else:
                 hashed_senha = generate_password_hash(password, method='pbkdf2:sha256')
-                connection = get_db_connection()
-                connection.execute(text('INSERT INTO users (nome, email, senha, typeSignature) VALUES (:name, :email, :hashed_senha, :typeSignature)'),
-                                   {'name': name, 'email': email, 'hashed_senha': hashed_senha, 'typeSignature': typeSignature})
-                connection.close()
+                new_user = User(nome=name, email=email, senha=hashed_senha, typeSignature=typeSignature)
+                db.session.add(new_user)
+                db.session.commit()
                 return redirect(url_for('index'))
 
     return render_template('index.html', error_message=error_message)
 
 @app.route('/get_registered_emails', methods=['GET'])
 def get_registered_emails():
-    connection = get_db_connection()
-    result = connection.execute(text('SELECT email FROM users'))
-    emails = result.fetchall()
-    connection.close()
-
-    email_list = [email[0] for email in emails]
+    users = User.query.with_entities(User.email).all()
+    email_list = [user.email for user in users]
     return jsonify(email_list)
 
 @app.route('/verify_user_password', methods=['POST'])
@@ -79,12 +74,8 @@ def verify_user_password():
     email = data.get('email')
     password = data.get('password')
 
-    connection = get_db_connection()
-    result = connection.execute(text('SELECT senha FROM users WHERE email = :email'), {'email': email})
-    user = result.fetchone()
-    connection.close()
-
-    if user and check_password_hash(user[0], password):
+    user = User.query.filter_by(email=email).first()
+    if user and check_password_hash(user.senha, password):
         return jsonify({"valid": True}), 200
     else:
         return jsonify({"valid": False, "error": "Senha inválida"}), 401
@@ -95,13 +86,9 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        connection = get_db_connection()
-        result = connection.execute(text('SELECT nome, senha FROM users WHERE email = :email'), {'email': email})
-        user = result.fetchone()
-        connection.close()
-
-        if user and check_password_hash(user[1], password):
-            session['username'] = user[0]
+        user = User.query.filter_by(email=email).first()
+        if user and check_password_hash(user.senha, password):
+            session['username'] = user.nome
             session['user_email'] = email
             return '', 200
         else:
@@ -117,30 +104,22 @@ def logged():
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
-    try:
-        data = request.json
-        email = data.get('email')
-        new_password = data.get('new_password')
+    data = request.json
+    email = data.get('email')
+    new_password = data.get('new_password')
 
-        if not email or not new_password:
-            return jsonify({"success": False, "error": "Dados incompletos"}), 400
+    if not email or not new_password:
+        return jsonify({"success": False, "error": "Dados incompletos"}), 400
 
-        connection = get_db_connection()
-        result = connection.execute(text('SELECT email FROM users WHERE email = :email'), {'email': email})
-        user = result.fetchone()
-        if not user:
-            connection.close()
-            return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"success": False, "error": "Usuário não encontrado"}), 404
 
-        hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
-        connection.execute(text('UPDATE users SET senha = :hashed_password WHERE email = :email'),
-                           {'hashed_password': hashed_password, 'email': email})
-        connection.close()
+    hashed_password = generate_password_hash(new_password, method='pbkdf2:sha256')
+    user.senha = hashed_password
+    db.session.commit()
 
-        return jsonify({"success": True}), 200
-    except Exception as e:
-        app.logger.error(f"Error in update_password: {str(e)}")
-        return jsonify({"success": False, "error": "Internal server error"}), 500
+    return jsonify({"success": True}), 200
 
 @app.route('/perfil-logged')
 def perfil_logged():
@@ -148,23 +127,20 @@ def perfil_logged():
     if not email:
         return redirect(url_for('login'))
 
-    connection = get_db_connection()
-    result = connection.execute(text('SELECT nome, email, senha, typeSignature FROM users WHERE email = :email'), {'email': email})
-    user_data = result.fetchone()
-    connection.close()
+    user = User.query.filter_by(email=email).first()
 
-    if not user_data:
+    if not user:
         return "Usuário não encontrado", 404
 
-    assinatura_text = "SEM PLANO" if user_data[3] == 0 else "COM PLANO"
-    user = {
-        "nome": user_data[0],
-        "email": user_data[1],
-        "senha": user_data[2],
+    assinatura_text = "SEM PLANO" if user.typeSignature == 0 else "COM PLANO"
+    user_data = {
+        "nome": user.nome,
+        "email": user.email,
+        "senha": user.senha,
         "assinatura": assinatura_text
     }
 
-    return render_template('tela_perfil.html', user=user)
+    return render_template('tela_perfil.html', user=user_data)
 
 @app.route('/como-usar-logged')
 def como_usar_logged():
