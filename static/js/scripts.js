@@ -135,6 +135,47 @@ if (indexarBtn) {
     });
 }
 
+// Armazena o arquivo de vídeo selecionado
+let selectedFile;
+if (fileInput) {
+    fileInput.addEventListener("change", function(event) {
+        if (event.target.files.length > 0) {
+            selectedFile = event.target.files[0];
+            document.getElementById('video-info').innerHTML = `Vídeo selecionado: ${selectedFile.name}`;
+        }
+    });
+}
+
+// Altere o comportamento do botão TRANSCREVER para enviar o vídeo
+if (btnTranscrever) {
+    btnTranscrever.onclick = function() {
+        if (!selectedFile) {
+            alert('Por favor, selecione um arquivo de vídeo usando o botão INDEXAR VÍDEO.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', selectedFile);
+
+        fetch('/transcrever', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'transcribed_video.mp4'; // Nome do arquivo baixado
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Erro ao transcrever o vídeo:', error));
+    };
+}
+
 function extractVideoId(url) {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/.*(?:v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regex);
@@ -195,7 +236,6 @@ if (btnContato) btnContato.addEventListener('click', function(event) {
     event.preventDefault();
     abrirModalContato();
 });
-if (btnTranscrever) btnTranscrever.onclick = function() { abrirModalPrice(); };
 
 var signButtons = getElements('.sign-button');
 signButtons.forEach(function(button) {

@@ -1,11 +1,16 @@
 import os
 import stripe
-from flask import Flask, render_template, jsonify, session, request, redirect, url_for
+from flask import Flask, render_template, jsonify, session, request, redirect, url_for, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import requests
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+
+# Configurar a variável de ambiente
+TRANSCRIPTION_API_URL = os.getenv('TRANSCRIPTION_API_URL')
 
 # Configurar a chave secreta do Flask a partir da variável de ambiente
 app.secret_key = os.environ.get('SECRET_KEY')
@@ -19,6 +24,29 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+
+@app.route('/transcrever', methods=['POST'])
+def transcrever():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    video_file = request.files['file']
+    video_file_path = os.path.join('/tmp', secure_filename(video_file.filename))
+    video_file.save(video_file_path)
+
+    # Chama a função de transcrição
+    transcribed_video = transcribe_video(video_file_path)
+
+    # Retorna o vídeo transcrito
+    return send_file(transcribed_video, as_attachment=True, download_name='transcribed_video.mp4')
+
+
+def transcribe_video(video_file_path):
+    url = f"{TRANSCRIPTION_API_URL}/transcribe"
+    files = {'file': open(video_file_path, 'rb')}
+    response = requests.post(url, files=files)
+    return response.content  # ou response.json(), dependendo do que você espera
 
 # Definição do modelo de usuário
 class User(db.Model):
