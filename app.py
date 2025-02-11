@@ -46,6 +46,7 @@ def transcribe_video(video_file_path):
     url = f"{TRANSCRIPTION_API_URL}/transcribe"
     files = {'file': open(video_file_path, 'rb')}
     response = requests.post(url, files=files)
+    print(type(response.content))
     return response.content  # ou response.json(), dependendo do que você espera
 
 # Definição do modelo de usuário
