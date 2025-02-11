@@ -28,25 +28,31 @@ migrate = Migrate(app, db)
 
 @app.route('/transcrever', methods=['POST'])
 def transcrever():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
 
-    video_file = request.files['file']
-    video_file_path = os.path.join('/tmp', secure_filename(video_file.filename))
-    video_file.save(video_file_path)
+        video_file = request.files['file']
+        video_file_path = os.path.join('/tmp', secure_filename(video_file.filename))
+        video_file.save(video_file_path)
 
-    # Chama a função de transcrição
-    transcribed_video = transcribe_video(video_file_path)
+        transcribed_video = transcribe_video(video_file_path)
 
-    # Retorna o vídeo transcrito
-    return send_file(transcribed_video, as_attachment=True, download_name='transcribed_video.mp4')
+        if not transcribed_video or not os.path.exists(transcribed_video):
+            return jsonify({"error": "Erro ao gerar o vídeo transcrito."}), 500
+
+        return send_file(transcribed_video, as_attachment=True, download_name='transcribed_video.mp4')
+    except Exception as e:
+        print(f"Erro no processamento da transcrição: {e}")
+        return jsonify({"error": "Erro interno no servidor."}), 500
 
 
 def transcribe_video(video_file_path):
+    print(f"Iniciando a transcrição para o vídeo: {video_file_path}")
     url = f"{TRANSCRIPTION_API_URL}/transcribe"
     files = {'file': open(video_file_path, 'rb')}
     response = requests.post(url, files=files)
-    print(type(response.content))
+    print("Transcrição concluída com sucesso.")
     return response.content  # ou response.json(), dependendo do que você espera
 
 # Definição do modelo de usuário
