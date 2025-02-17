@@ -38,10 +38,10 @@ def transcrever():
 
         transcribed_video = transcribe_video(video_file_path)
 
-        if not transcribed_video or not os.path.exists(transcribed_video):
+        if not transcribed_video:
             return jsonify({"error": "Erro ao gerar o vídeo transcrito."}), 500
 
-        return send_file(transcribed_video, as_attachment=True, download_name='transcribed_video.mp4')
+        return send_file(transcribe_video, as_attachment=True, download_name='transcribed_video.mp4')
     except Exception as e:
         print(f"Erro no processamento da transcrição: {e}")
         return jsonify({"error": "Erro interno no servidor."}), 500
@@ -50,10 +50,16 @@ def transcrever():
 def transcribe_video(video_file_path):
     print(f"Iniciando a transcrição para o vídeo: {video_file_path}")
     url = f"{TRANSCRIPTION_API_URL}/transcribe"
-    files = {'file': open(video_file_path, 'rb')}
-    response = requests.post(url, files=files)
-    print("Transcrição concluída com sucesso.")
-    return response.content  # ou response.json(), dependendo do que você espera
+    try:
+        with open(video_file_path, 'rb') as f:
+            files = {'file': (os.path.basename(video_file_path), f, 'multipart/form-data')}
+            response = requests.post(url, files=files, timeout=600)
+            response.raise_for_status()  # Lança uma exceção para erros HTTP
+            print("Transcrição concluída com sucesso.")
+            return response.content
+    except requests.exceptions.RequestException as e:
+        print(f"Erro na requisição para o serviço de transcrição: {e}")
+        return None
 
 # Definição do modelo de usuário
 class User(db.Model):
