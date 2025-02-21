@@ -161,16 +161,22 @@ if (btnTranscrever) {
             method: 'POST',
             body: formData
         })
-        .then(response => response.blob())
-        .then(blob => {
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'transcribed_video.mp4'; // Nome do arquivo baixado
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            window.URL.revokeObjectURL(url);
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Vídeo enviado para transcrição com sucesso.") {
+                alert('Vídeo enviado para transcrição com sucesso. Aguarde o download automático.');
+            } else if (data.status === 'success' && data.video_url) {
+                // Cria um link temporário para o download
+                var link = document.createElement('a');
+                link.href = data.video_url;
+                link.download = 'transcribed_video.mp4'; // Nome do arquivo a ser baixado
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error('Erro ao enviar o vídeo:', data.error);
+                alert('Erro ao enviar o vídeo: ' + data.error);
+            }
         })
         .catch(error => console.error('Erro ao transcrever o vídeo:', error));
     };

@@ -1,11 +1,12 @@
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for, send_file
 import os
 import stripe
-from flask import Flask, render_template, jsonify, session, request, redirect, url_for, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import requests
 from werkzeug.utils import secure_filename
+import uuid  # Importe o módulo UUID
 
 app = Flask(__name__)
 
@@ -25,7 +26,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+# Chave secreta para webhook
+WEBHOOK_SECRET = os.environ.get('WEBHOOK_SECRET')
 
+# Rota para receber o vídeo e iniciar a transcrição
 @app.route('/transcrever', methods=['POST'])
 def transcrever():
     try:
@@ -33,33 +37,45 @@ def transcrever():
             return jsonify({"error": "No file provided"}), 400
 
         video_file = request.files['file']
-        video_file_path = os.path.join('/tmp', secure_filename(video_file.filename))
-        video_file.save(video_file_path)
+        video_filename = secure_filename(video_file.filename)
+        video_path = os.path.join('/tmp', video_filename)
+        video_file.save(video_path)
 
-        transcribed_video = transcribe_video(video_file_path)
+        # Gere um ID único para o vídeo
+        video_id = str(uuid.uuid4())
 
-        if not transcribed_video:
-            return jsonify({"error": "Erro ao gerar o vídeo transcrito."}), 500
+        # Envie o vídeo para o serviço de transcrição
+        transcription_url = f"{TRANSCRIPTION_API_URL}/transcribe"
+        files = {'file': (video_filename, open(video_path, 'rb'), 'multipart/form-data')}
+        data = {'video_id': video_id, 'webhook_url': url_for('transcription_webhook', _external=True)}  # Envie a URL do webhook e o ID do vídeo
+        response = requests.post(transcription_url, files=files, data=data)  # Envie o ID do vídeo
 
-        return send_file(transcribe_video, as_attachment=True, download_name='transcribed_video.mp4')
+        if response.status_code != 200:
+            return jsonify({"error": "Erro ao enviar o vídeo para transcrição."}), 500
+
+        return jsonify({"message": "Vídeo enviado para transcrição com sucesso.", "video_id": video_id}), 200
+
     except Exception as e:
         print(f"Erro no processamento da transcrição: {e}")
         return jsonify({"error": "Erro interno no servidor."}), 500
 
+# Rota para receber a notificação do webhook
+@app.route('/transcription_webhook', methods=['POST'])
+def transcription_webhook():
+    # Verifique a autenticidade da requisição
+    webhook_token = request.headers.get('X-Webhook-Token')
+    if webhook_token != WEBHOOK_SECRET:
+        return jsonify({'status': 'error', 'message': 'Unauthorized'}), 401
 
-def transcribe_video(video_file_path):
-    print(f"Iniciando a transcrição para o vídeo: {video_file_path}")
-    url = f"{TRANSCRIPTION_API_URL}/transcribe"
-    try:
-        with open(video_file_path, 'rb') as f:
-            files = {'file': (os.path.basename(video_file_path), f, 'multipart/form-data')}
-            response = requests.post(url, files=files, timeout=600)
-            response.raise_for_status()  # Lança uma exceção para erros HTTP
-            print("Transcrição concluída com sucesso.")
-            return response.content
-    except requests.exceptions.RequestException as e:
-        print(f"Erro na requisição para o serviço de transcrição: {e}")
-        return None
+    data = request.get_json()
+    video_id = data.get('video_id')
+    video_url = data.get('video_url')
+
+    # Faça algo com a URL do vídeo e o ID do vídeo (por exemplo, salve no banco de dados)
+    print(f"Transcrição concluída para o vídeo {video_id}. URL: {video_url}")
+
+    # Retorne a URL do vídeo para o cliente fazer o download
+    return jsonify({'status': 'success', 'video_url': video_url}), 200
 
 # Definição do modelo de usuário
 class User(db.Model):
