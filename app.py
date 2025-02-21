@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 import requests
 from werkzeug.utils import secure_filename
 import uuid  # Importe o módulo UUID
+import threading
 
 app = Flask(__name__)
 
@@ -44,6 +45,17 @@ def transcrever():
         # Gere um ID único para o vídeo
         video_id = str(uuid.uuid4())
 
+        # Envie o vídeo para o serviço de transcrição em uma thread separada
+        threading.Thread(target=send_video_for_transcription, args=(video_filename, video_path, video_id)).start()
+
+        return jsonify({"message": "Vídeo enviado para transcrição com sucesso.", "video_id": video_id}), 200
+
+    except Exception as e:
+        print(f"Erro no processamento da transcrição: {e}")
+        return jsonify({"error": "Erro interno no servidor."}), 500
+
+def send_video_for_transcription(video_filename, video_path, video_id):
+    try:
         # Envie o vídeo para o serviço de transcrição
         transcription_url = f"{TRANSCRIPTION_API_URL}/transcribe"
         files = {'file': (video_filename, open(video_path, 'rb'), 'multipart/form-data')}
@@ -51,13 +63,11 @@ def transcrever():
         response = requests.post(transcription_url, files=files, data=data)  # Envie o ID do vídeo
 
         if response.status_code != 200:
-            return jsonify({"error": "Erro ao enviar o vídeo para transcrição."}), 500
-
-        return jsonify({"message": "Vídeo enviado para transcrição com sucesso.", "video_id": video_id}), 200
+            print(f"Erro ao enviar o vídeo para transcrição: {response.status_code}")
+            # Lide com o erro aqui (por exemplo, tente novamente mais tarde)
 
     except Exception as e:
-        print(f"Erro no processamento da transcrição: {e}")
-        return jsonify({"error": "Erro interno no servidor."}), 500
+        print(f"Erro ao enviar o vídeo para transcrição: {e}")
 
 # Rota para receber a notificação do webhook
 @app.route('/transcription_webhook', methods=['POST'])
