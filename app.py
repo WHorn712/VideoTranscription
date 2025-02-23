@@ -96,6 +96,7 @@ def transcription_status():
     if video_id in transcription_results:
         return jsonify(transcription_results[video_id]), 200
     else:
+        print("pending")
         return jsonify({'status': 'pending'}), 200
 
 # Definição do modelo de usuário
