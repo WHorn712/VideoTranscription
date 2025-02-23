@@ -69,6 +69,9 @@ def send_video_for_transcription(video_filename, video_path, video_id):
     except Exception as e:
         print(f"Erro ao enviar o vídeo para transcrição: {e}")
 
+# Armazenar a URL do vídeo transcrito
+transcription_results = {}
+
 # Rota para receber a notificação do webhook
 @app.route('/transcription_webhook', methods=['POST'])
 def transcription_webhook():
@@ -81,11 +84,19 @@ def transcription_webhook():
     video_id = data.get('video_id')
     video_url = data.get('video_url')
 
-    # Faça algo com a URL do vídeo e o ID do vídeo (por exemplo, salve no banco de dados)
-    print(f"Transcrição concluída para o vídeo {video_id}. URL: {video_url}")
+    # Armazena a URL do vídeo transcrito
+    transcription_results[video_id] = {'status': 'completed', 'video_url': video_url}
 
-    # Retorne a URL do vídeo para o cliente fazer o download
     return jsonify({'status': 'success', 'video_url': video_url}), 200
+
+# Rota para verificar o status da transcrição
+@app.route('/transcription_status', methods=['GET'])
+def transcription_status():
+    video_id = request.args.get('video_id')
+    if video_id in transcription_results:
+        return jsonify(transcription_results[video_id]), 200
+    else:
+        return jsonify({'status': 'pending'}), 200
 
 # Definição do modelo de usuário
 class User(db.Model):

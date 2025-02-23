@@ -165,6 +165,7 @@ if (btnTranscrever) {
         .then(data => {
             if (data.message === "Vídeo enviado para transcrição com sucesso.") {
                 alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
+                startPolling(data.video_id); // Inicia o loop de verificação
             } else {
                 console.error('Erro ao enviar o vídeo:', data.error);
                 alert('Erro ao enviar o vídeo: ' + data.error);
@@ -172,6 +173,33 @@ if (btnTranscrever) {
         })
         .catch(error => console.error('Erro ao transcrever o vídeo:', error));
     };
+}
+
+function startPolling(video_id) {
+    var intervalId = setInterval(function() {
+        fetch('/transcription_status?video_id=' + video_id)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                clearInterval(intervalId); // Para o loop de verificação
+                // Cria um link temporário para o download
+                var link = document.createElement('a');
+                link.href = data.video_url;
+                link.download = 'transcribed_video.mp4'; // Nome do arquivo a ser baixado
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (data.status === 'error') {
+                clearInterval(intervalId);
+                alert('Erro na transcrição: ' + data.error);
+            }
+        })
+        .catch(error => {
+            clearInterval(intervalId);
+            console.error('Erro ao verificar o status da transcrição:', error);
+            alert('Erro ao verificar o status da transcrição: ' + error);
+        });
+    }, 5000); // Verifica a cada 5 segundos
 }
 
 function extractVideoId(url) {
