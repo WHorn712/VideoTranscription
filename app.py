@@ -59,7 +59,7 @@ def send_video_for_transcription(video_filename, video_path, video_id):
         # Envie o vídeo para o serviço de transcrição
         transcription_url = f"{TRANSCRIPTION_API_URL}/transcribe"
         print(f"URL de transcrição: {transcription_url}")  # Adicione este log
-        
+
         # Abra o arquivo dentro do bloco 'with' para garantir que ele seja fechado corretamente
         with open(video_path, 'rb') as video_file:
             files = {'file': (video_filename, video_file, 'multipart/form-data')}
