@@ -176,6 +176,7 @@ if (btnTranscrever) {
 }
 
 function startPolling(video_id) {
+    console.log("video_id:", video_id)
     var intervalId = setInterval(function() {
         fetch('/transcription_status?video_id=' + video_id)
         .then(response => response.json())
