@@ -58,9 +58,11 @@ def send_video_for_transcription(video_filename, video_path, video_id):
     try:
         # Envie o vídeo para o serviço de transcrição
         transcription_url = f"{TRANSCRIPTION_API_URL}/transcribe"
-        files = {'file': (video_filename, open(video_path, 'rb'), 'multipart/form-data')}
-        data = {'video_id': video_id, 'webhook_url': url_for('transcription_webhook', _external=True)}  # Envie a URL do webhook e o ID do vídeo
-        response = requests.post(transcription_url, files=files, data=data)  # Envie o ID do vídeo
+        # Abra o arquivo dentro do bloco 'with' para garantir que ele seja fechado corretamente
+        with open(video_path, 'rb') as video_file:
+            files = {'file': (video_filename, video_file, 'multipart/form-data')}
+            data = {'video_id': video_id, 'webhook_url': url_for('transcription_webhook', _external=True)}  # Envie a URL do webhook e o ID do vídeo
+            response = requests.post(transcription_url, files=files, data=data)  # Envie o ID do vídeo
 
         if response.status_code != 200:
             print(f"Erro ao enviar o vídeo para transcrição: {response.status_code}")
