@@ -92,7 +92,9 @@ def transcription_webhook():
 # Rota para verificar o status da transcrição
 @app.route('/transcription_status', methods=['GET'])
 def transcription_status():
+    print("transcription_status")
     video_id = request.args.get('video_id')
+    print("transcription_status_videoID: ",video_id)
     if video_id in transcription_results:
         return jsonify(transcription_results[video_id]), 200
     else:
