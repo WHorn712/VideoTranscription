@@ -163,6 +163,7 @@ def verify_user_password():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("certo")
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
