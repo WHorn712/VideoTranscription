@@ -64,7 +64,8 @@ def send_video_for_transcription(video_filename, video_path, video_id):
         with open(video_path, 'rb') as video_file:
             files = {'file': (video_filename, video_file, 'multipart/form-data')}
             print("aqui 1")
-            url_for_data = url_for('transcription_webhook', _external=True)
+            with app.app_context():
+                url_for_data = url_for('transcription_webhook', _external=True)
             print("aqui ", type(video_id), "  ", type(url_for_data))
             data = {'video_id': video_id, 'webhook_url': url_for_data}  # Envie a URL do webhook e o ID do vídeo
             print("aqui 2")
