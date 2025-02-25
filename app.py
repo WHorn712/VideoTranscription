@@ -63,6 +63,7 @@ def send_video_for_transcription(video_filename, video_path, video_id):
         # Abra o arquivo dentro do bloco 'with' para garantir que ele seja fechado corretamente
         with open(video_path, 'rb') as video_file:
             files = {'file': (video_filename, video_file, 'multipart/form-data')}
+            print("aqui")
             data = {'video_id': video_id, 'webhook_url': url_for('transcription_webhook', _external=True)}  # Envie a URL do webhook e o ID do vídeo
             response = requests.post(transcription_url, files=files, data=data)  # Envie o ID do vídeo
 
