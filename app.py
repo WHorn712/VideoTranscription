@@ -30,11 +30,11 @@ migrate = Migrate(app, db)
 # Chave secreta para webhook
 WEBHOOK_SECRET = os.environ.get('WEBHOOK_SECRET')
 
-app.config['SERVER_NAME'] = os.environ.get('SERVER_NAME')
+#app.config['SERVER_NAME'] = os.environ.get('SERVER_NAME')
 
-app.config['APPLICATION_ROOT'] = os.environ.get('APPLICATION_ROOT', '')
+#app.config['APPLICATION_ROOT'] = os.environ.get('APPLICATION_ROOT', '')
 
-app.config['PREFERRED_URL_SCHEME'] = os.environ.get('PREFERRED_URL_SCHEME', 'http')
+#app.config['PREFERRED_URL_SCHEME'] = os.environ.get('PREFERRED_URL_SCHEME', 'http')
 
 # Rota para receber o vídeo e iniciar a transcrição
 @app.route('/transcrever', methods=['POST'])
