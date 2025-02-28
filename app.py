@@ -84,6 +84,7 @@ def send_video_for_transcription(video_filename, video_path, video_id):
 def transcription_webhook():
     # Verifique a autenticidade da requisição
     webhook_token = request.headers.get('X-Webhook-Token')
+    print("error rota")
     if webhook_token != WEBHOOK_SECRET:
         return jsonify({'status': 'error', 'message': 'Unauthorized'}), 401
 
