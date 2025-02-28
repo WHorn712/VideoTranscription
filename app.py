@@ -90,7 +90,9 @@ def transcription_webhook():
 
     data = request.get_json()
     video_id = data.get('video_id')
+    teste_url = "https://videos.legendasoficial.com/output_video_11.mp4"
     video_url = data.get('video_url')
+    video_url = teste_url
     print("video_url ",video_url)
 
     # Armazena a URL do vídeo transcrito
