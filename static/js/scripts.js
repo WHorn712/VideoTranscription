@@ -183,13 +183,8 @@ function startPolling(video_id) {
         .then(data => {
             if (data.status === 'completed') {
                 clearInterval(intervalId); // Para o loop de verificação
-                // Cria um link temporário para o download
-                var link = document.createElement('a');
-                link.href = data.video_url;
-                link.download = 'transcribed_video.mp4'; // Nome do arquivo a ser baixado
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Inicia o download usando window.location
+                window.location.href = data.video_url;
             } else if (data.status === 'error') {
                 clearInterval(intervalId);
                 alert('Erro na transcrição: ' + data.error);
