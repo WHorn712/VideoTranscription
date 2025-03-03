@@ -252,8 +252,8 @@ spanCloses.forEach(function(spanClose) {
 
 // Eventos de clique
 if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
-if (btnTranscrever_index) = function() { abrirModal(modal); };
-if (btnIndexar_index) = function() { abrirModal(modal) };
+if (btnTranscrever_index) btnTranscrever_index.onclick = function() { abrirModal(modal); };
+if (btnIndexar_index) btnIndexar_index.onclick = function() { abrirModal(modal) };
 if (btnLogin) btnLogin.onclick = function() {
      abrirModal(modalLogin);
      var recuperePassword = document.getElementById("recoverPasswordBtn");
