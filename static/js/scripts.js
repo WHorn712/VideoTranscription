@@ -24,6 +24,8 @@ var btnLogin = getElement("#loginBtn");
 var btnEntrar = modalLogin ? modalLogin.querySelector('button[type="submit"]') : null;
 var btnContato = getElement('.nav-links li:nth-child(3) a');
 var btnTranscrever = getElement("#transcreverBtn");
+var btnTranscrever_index = getElement("#transcreverBtnIndex");
+var btnIndexar_index = getElement("#indexarBtnIndex");
 var spanCloses = getElements('.close');
 var form = modal ? modal.querySelector("form") : null;
 var submitButton = form ? form.querySelector('button[type="submit"]') : null;
@@ -146,6 +148,7 @@ if (fileInput) {
     });
 }
 
+
 // Altere o comportamento do botão TRANSCREVER para enviar o vídeo
 if (btnTranscrever) {
     btnTranscrever.onclick = function() {
@@ -249,6 +252,8 @@ spanCloses.forEach(function(spanClose) {
 
 // Eventos de clique
 if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
+if (btnTranscrever_index) = function() { abrirModal(modal); };
+if (btnIndexar_index) = function() { abrirModal(modal) };
 if (btnLogin) btnLogin.onclick = function() {
      abrirModal(modalLogin);
      var recuperePassword = document.getElementById("recoverPasswordBtn");
