@@ -651,6 +651,15 @@
         transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
+    /* Estilo destacado para o botão "TRANSCREVER" */
+    #transcreverBtnIndex {
+        background-color: #ff4c4c; /* Cor de fundo mais vibrante */
+        color: #fff; /* Cor do texto em branco */
+        border: 2px solid #ff1c1c; /* Borda mais intensa */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
     #transcreverBtn:hover {
         background-color: #cc0000; /* Cor mais intensa no hover */
         transform: scale(1.05); /* Aumento mais perceptível no hover */
