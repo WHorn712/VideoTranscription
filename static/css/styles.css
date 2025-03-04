@@ -656,6 +656,11 @@
         transform: scale(1.05); /* Aumento mais perceptível no hover */
     }
 
+    #transcreverBtnIndex:hover {
+        background-color: #cc0000; /* Cor mais intensa no hover */
+        transform: scale(1.05); /* Aumento mais perceptível no hover */
+    }
+
     .destaque {
             color: #FF4500; /* Cor do texto em laranja */
             font-weight: bold; /* Texto em negrito */
