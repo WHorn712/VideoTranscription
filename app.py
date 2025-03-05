@@ -120,6 +120,41 @@ class User(db.Model):
     senha = db.Column(db.String(255), nullable=False)
     typeSignature = db.Column(db.Integer)
 
+### Rotas para gerenciar typeSignature ###
+@app.route('/get_type_signature', methods=['GET'])
+def get_type_signature():
+    email = session.get('user_email')
+    if not email:
+        return jsonify({"error": "Usuário não autenticado"}), 401
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "Usuário não encontrado"}), 404
+
+    return jsonify({"typeSignature": user.typeSignature}), 200
+
+@app.route('/update_type_signature', methods=['POST'])
+def update_type_signature():
+    email = session.get('user_email')
+    if not email:
+        return jsonify({"error": "Usuário não autenticado"}), 401
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "Usuário não encontrado"}), 404
+
+    data = request.get_json()
+    new_type_signature = data.get('typeSignature')
+
+    if new_type_signature is None or not isinstance(new_type_signature, int):
+        return jsonify({"error": "Valor de typeSignature inválido"}), 400
+
+    user.typeSignature = new_type_signature
+    db.session.commit()
+
+    return jsonify({"message": "typeSignature atualizado com sucesso"}), 200
+### Fim das rotas para gerenciar typeSignature ###
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -266,9 +301,57 @@ def sobre_nos_logged():
 def sobre_nos():
     return render_template('tela_sobre_nos.html')
 
-@app.route('/pagamento')
+@app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
-    return render_template('pagamento.html')
+    if request.method == 'GET':
+        # Se for uma requisição GET, renderize o formulário de pagamento
+        return render_template('pagamento.html')
+    elif request.method == 'POST':
+        try:
+            # Obtenha o token do Stripe e o plano do formulário
+            token = request.form.get('stripeToken')
+            plan = request.form.get('plan')
+
+            email = session.get('user_email')
+            user = User.query.filter_by(email=email).first()
+
+
+            if plan == 'basic':
+                plan_typeSignature = 2
+                price_id = 'price_1Qz1P0LTkDndcSCYcAFWMpZu'  # Substitua pelo seu price ID mensal real
+            elif plan == 'standard':
+                plan_typeSignature = 1
+                price_id = 'price_1Qz1NrLTkDndcSCYd1kGyUAZ'  # Substitua pelo seu price ID diário real
+            else:
+                return jsonify({'error': 'Plano inválido'}), 400
+
+            # Crie um cliente no Stripe
+            customer = stripe.Customer.create(
+                email=email,
+                source=token,
+            )
+
+            # Crie uma assinatura no Stripe
+            subscription = stripe.Subscription.create(
+                customer=customer.id,
+                items=[
+                    {
+                        "price": price_id,
+                    },
+                ],
+            )
+
+            # Atualize o typeSignature do usuário no banco de dados
+            user.typeSignature = plan_typeSignature
+            db.session.commit()
+
+            return render_template('pagamento_sucesso.html')  # Crie uma página de sucesso
+        except stripe.error.CardError as e:
+            # Ocorreu um erro com o cartão
+            return jsonify({'error': str(e)}), 400
+        except Exception as e:
+            # Outro erro ocorreu
+            return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
