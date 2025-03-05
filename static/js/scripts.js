@@ -38,6 +38,8 @@ var video = document.createElement("video");
 var btnContatoRodape = getElement('.footer-links a:nth-child(3)');
 var emailExistenteBD = false;
 
+
+
 // Seleciona o botão de registrar do modal de recuperação
 var btnRegistrarRecupere = modalRecupere ? modalRecupere.querySelector('button[type="submit"]') : null;
 
@@ -45,6 +47,40 @@ var btnRegistrarRecupere = modalRecupere ? modalRecupere.querySelector('button[t
 if (btnRegistrarRecupere) {
     btnRegistrarRecupere.style.backgroundColor = "#d3d3d3"; // Cinza por padrão
     btnRegistrarRecupere.style.color = "#000000";
+}
+
+// Eventos
+if (btnContatoRodape) {
+    btnContatoRodape.addEventListener('click', function(event) {
+        event.preventDefault();
+        abrirModalContato();
+    });
+}
+
+if (fileInput) {
+    fileInput.addEventListener("change", function(event) {
+        if (event.target.files.length > 0) {
+            var file = event.target.files[0];
+            var fileURL = URL.createObjectURL(file);
+            video.src = fileURL;
+
+            video.addEventListener("loadeddata", function() {
+                video.currentTime = 1;
+            }, { once: true });
+
+            video.addEventListener("seeked", function() {
+                document.getElementById('video-info').innerHTML = '';
+
+                if (canvas) {
+                    canvas.width = video.videoWidth * 0.3;
+                    canvas.height = video.videoHeight * 0.3;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(fileURL);
+                    canvas.style.display = "block";
+                }
+            }, { once: true });
+        }
+    });
 }
 
 // Função para verificar os campos do modal de login
@@ -67,6 +103,116 @@ function verificarCamposLogin() {
 // Evento para disparar a verificação de campos no modal de login
 if (modalLogin) {
     modalLogin.addEventListener('input', verificarCamposLogin);
+}
+
+if (btnLogin) {
+    btnLogin.addEventListener('click', function() {
+        abrirModal(modalLogin);
+        verificarCamposLogin(); // Verifica os campos ao abrir o modal
+    });
+}
+
+
+if (getElement('#fetch-video')) {
+    getElement('#fetch-video').addEventListener('click', function() {
+        const url = getElement('#videoLink').value;
+        const videoId = extractVideoId(url);
+        if (videoId) {
+            displayThumbnail(videoId);
+        } else {
+            getElement('#video-info').innerHTML = 'Link inválido. Por favor, insira um link válido do YouTube.';
+        }
+    });
+}
+
+if (getElement('#logoButton')) {
+    getElement('#logoButton').addEventListener('click', function() {
+        window.location.href = 'main_web.html';
+    });
+}
+
+if (indexarBtn) {
+    indexarBtn.addEventListener('click', function() {
+        if (fileInput) fileInput.click();
+    });
+}
+
+// Armazena o arquivo de vídeo selecionado
+let selectedFile;
+if (fileInput) {
+    fileInput.addEventListener("change", function(event) {
+        if (event.target.files.length > 0) {
+            selectedFile = event.target.files[0];
+            document.getElementById('video-info').innerHTML = `Vídeo selecionado: ${selectedFile.name}`;
+        }
+    });
+}
+
+
+// Altere o comportamento do botão TRANSCREVER para enviar o vídeo
+if (btnTranscrever) {
+    btnTranscrever.onclick = function() {
+        if (!selectedFile) {
+            alert('Por favor, selecione um arquivo de vídeo usando o botão INDEXAR VÍDEO.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('file', selectedFile);
+
+        fetch('/transcrever', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Vídeo enviado para transcrição com sucesso.") {
+                alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
+                startPolling(data.video_id); // Inicia o loop de verificação
+            } else {
+                console.error('Erro ao enviar o vídeo:', data.error);
+                alert('Erro ao enviar o vídeo: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Erro ao transcrever o vídeo:', error));
+    };
+}
+
+function startPolling(video_id) {
+    console.log("video_id:", video_id)
+    var intervalId = setInterval(function() {
+        fetch('/transcription_status?video_id=' + video_id)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                clearInterval(intervalId); // Para o loop de verificação
+                // Inicia o download usando window.location
+                window.location.href = data.video_url;
+            } else if (data.status === 'error') {
+                clearInterval(intervalId);
+                alert('Erro na transcrição: ' + data.error);
+            }
+        })
+        .catch(error => {
+            clearInterval(intervalId);
+            console.error('Erro ao verificar o status da transcrição:', error);
+            alert('Erro ao verificar o status da transcrição: ' + error);
+        });
+    }, 5000); // Verifica a cada 5 segundos
+}
+
+function extractVideoId(url) {
+    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/.*(?:v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+}
+
+function displayThumbnail(videoId) {
+    if (canvas) canvas.style.display = "none";
+    const imgUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+    getElement('#video-info').innerHTML = `
+        <img src="${imgUrl}" alt="Thumbnail do vídeo" style="max-width: 100%; height: auto; border-radius: 10px;">
+    `;
 }
 
 // Função para limpar inputs de um modal
@@ -95,6 +241,38 @@ function abrirModalPrice() {
     abrirModal(modalPrice);
 }
 
+// Eventos de fechamento de modal
+spanCloses.forEach(function(spanClose) {
+    spanClose.onclick = function() {
+        if (this.closest('.modal, .modalPrice')) {
+            this.closest('.modal, .modalPrice').style.display = "none";
+        }
+    };
+});
+
+// Eventos de clique
+if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
+if (btnTranscrever_index) btnTranscrever_index.onclick = function() { abrirModal(modal); };
+if (btnIndexar_index) btnIndexar_index.onclick = function() { abrirModal(modal) };
+if (btnLogin) btnLogin.onclick = function() {
+     abrirModal(modalLogin);
+     var recuperePassword = document.getElementById("recoverPasswordBtn");
+     recuperePassword.style.display = "none"
+};
+if (btnContato) btnContato.addEventListener('click', function(event) {
+    event.preventDefault();
+    abrirModalContato();
+});
+
+var signButtons = getElements('.sign-button');
+signButtons.forEach(function(button) {
+    button.onclick = function() {
+        if (modalPrice) modalPrice.style.display = "none";
+        abrirModal(modal);
+        verificarCampos();
+    };
+});
+
 // Verificação de campos
 function verificarCampos() {
     if (!form) return;
@@ -116,6 +294,16 @@ function verificarCampos() {
 
 function abrirModalExit() {
     modalExit.style.display = "block";
+}
+
+
+
+if (form) {
+    form.addEventListener('input', verificarCampos);
+}
+
+if (btnCadastrar) {
+    btnCadastrar.addEventListener('click', verificarCampos);
 }
 
 function showMessageModal() {
@@ -169,45 +357,105 @@ function toggleLoadingSpinner(show) {
     }
 }
 
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Duplicação desnecessária destas variáveis
+    // Elas já foram definidas anteriormente no código
+    // var modalLogin = document.querySelector("#myModalLogin");
+    // var modalRecupere = document.querySelector("#modalRecupere");
+
+    console.log("Modal Recupere encontrado:", !!modalRecupere);
+
+    var btnRecoverPassword = document.querySelector("#recoverPasswordBtn");
+
+    if (btnRecoverPassword) {
+        btnRecoverPassword.addEventListener('click', function() {
+            fetchRegisteredEmails();
+            emailInputLoginRecupere = document.querySelector('#loginemail');
+            if (registeredEmails.includes(emailInputLoginRecupere.value)) {
+                if (modalLogin) {
+                    modalLogin.style.display = "none";
+                }
+                if (modalRecupere) {
+                    modalRecupere.style.display = "block";
+                    limparInputs(modalRecupere);
+                } else {
+                    console.error("Modal de recuperação não encontrado.");
+                }
+            }
+            else {
+                modalLogin.style.display = "none";
+                modalRecupere.style.display = "none";
+            }});
+    }
+
+    // Evento para verificar senhas no modal de recuperação
+    if (modalRecupere) {
+        modalRecupere.addEventListener('input', verificarSenhasRecupere);
+    }
+});
+
 function for_logged() {
     window.location.href = '/logged';
 }
 
-function extractVideoId(url) {
-    const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/.*(?:v=|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-}
+document.getElementById('registerForm').addEventListener('submit', function(event) {
+  event.preventDefault();
 
-function displayThumbnail(videoId) {
-    if (canvas) canvas.style.display = "none";
-    const imgUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
-    getElement('#video-info').innerHTML = `
-        <img src="${imgUrl}" alt="Thumbnail do vídeo" style="max-width: 100%; height: auto; border-radius: 10px;">
-    `;
-}
+  const formData = new FormData(this);
 
-function startPolling(video_id) {
-    console.log("video_id:", video_id)
-    var intervalId = setInterval(function() {
-        fetch('/transcription_status?video_id=' + video_id)
+  fetch('/register', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.text())
+  .then(result => {
+
+  })
+  .catch(error => console.error('Error:', error));
+  executeActionAndShowModal();
+});
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  verificarSenhasLogin();
+  const formData = new FormData(this);
+
+  toggleLoadingSpinner(true);
+
+  fetch('/login', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (response.ok) {
+      // Se a resposta do servidor for 200 OK, redirecionar para logged.html
+      setTimeout(for_logged, 3000);
+      toggleLoadingSpinner(false);
+    } else {
+      // Caso contrário, exibir uma mensagem de erro
+      getElement('#loginpassword').setCustomValidity("Senha inválida");
+      toggleLoadingSpinner(false);
+    }
+  })
+  .catch(error => {
+        console.error('Error:', error);
+        // Esconde a animação de carregamento em caso de erro
+        toggleLoadingSpinner(false);
+    });
+});
+
+
+
+// Função para buscar e-mails ao abrir o modal
+function fetchRegisteredEmails() {
+    fetch('/get_registered_emails')
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'completed') {
-                clearInterval(intervalId); // Para o loop de verificação
-                // Inicia o download usando window.location
-                window.location.href = data.video_url;
-            } else if (data.status === 'error') {
-                clearInterval(intervalId);
-                alert('Erro na transcrição: ' + data.error);
-            }
+            registeredEmails = data;
         })
-        .catch(error => {
-            clearInterval(intervalId);
-            console.error('Erro ao verificar o status da transcrição:', error);
-            alert('Erro ao verificar o status da transcrição: ' + error);
-        });
-    }, 5000); // Verifica a cada 5 segundos
+        .catch(error => console.error('Erro ao buscar e-mails registrados:', error));
 }
 
 // Adicione a chamada para `fetchRegisteredEmails` quando o modal for aberto
@@ -236,11 +484,9 @@ function verificarEmail() {
 }
 
 // Evento de input para disparar a verificação do email
-if (emailInput) {
-    emailInput.addEventListener('input', function () {
-        verificarEmail();
-    });
-}
+emailInput.addEventListener('input', function () {
+    verificarEmail();
+});
 
 if (form) {
     form.addEventListener('input', verificarCampos);
@@ -415,344 +661,11 @@ if (btnRegistrarRecupere) {
     });
 }
 
-// Eventos de clique
-if (btnContatoRodape) {
-    btnContatoRodape.addEventListener('click', function(event) {
-        event.preventDefault();
-        abrirModalContato();
-    });
-}
 
-if (fileInput) {
-    fileInput.addEventListener("change", function(event) {
-        if (event.target.files.length > 0) {
-            var file = event.target.files[0];
-            var fileURL = URL.createObjectURL(file);
-            video.src = fileURL;
 
-            video.addEventListener("loadeddata", function() {
-                video.currentTime = 1;
-            }, { once: true });
 
-            video.addEventListener("seeked", function() {
-                document.getElementById('video-info').innerHTML = '';
 
-                if (canvas) {
-                    canvas.width = video.videoWidth * 0.3;
-                    canvas.height = video.videoHeight * 0.3;
-                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    URL.revokeObjectURL(fileURL);
-                    canvas.style.display = "block";
-                }
-            }, { once: true });
-        }
-    });
-}
 
-if (btnLogin) {
-    btnLogin.addEventListener('click', function() {
-        abrirModal(modalLogin);
-        verificarCamposLogin(); // Verifica os campos ao abrir o modal
-    });
-}
 
-if (getElement('#fetch-video')) {
-    getElement('#fetch-video').addEventListener('click', function() {
-        const url = getElement('#videoLink').value;
-        const videoId = extractVideoId(url);
-        if (videoId) {
-            displayThumbnail(videoId);
-        } else {
-            getElement('#video-info').innerHTML = 'Link inválido. Por favor, insira um link válido do YouTube.';
-        }
-    });
-}
 
-if (getElement('#logoButton')) {
-    getElement('#logoButton').addEventListener('click', function() {
-        window.location.href = 'main_web.html';
-    });
-}
 
-if (indexarBtn) {
-    indexarBtn.addEventListener('click', function() {
-        if (fileInput) fileInput.click();
-    });
-}
-
-// Armazena o arquivo de vídeo selecionado
-let selectedFile;
-if (fileInput) {
-    fileInput.addEventListener("change", function(event) {
-        if (event.target.files.length > 0) {
-            selectedFile = event.target.files[0];
-            document.getElementById('video-info').innerHTML = `Vídeo selecionado: ${selectedFile.name}`;
-        }
-    });
-}
-
-// Altere o comportamento do botão TRANSCREVER para enviar o vídeo
-if (btnTranscrever) {
-    btnTranscrever.onclick = function() {
-        if (!selectedFile) {
-            alert('Por favor, selecione um arquivo de vídeo usando o botão INDEXAR VÍDEO.');
-            return;
-        }
-
-        var formData = new FormData();
-        formData.append('file', selectedFile);
-
-        fetch('/transcrever', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === "Vídeo enviado para transcrição com sucesso.") {
-                alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
-                startPolling(data.video_id); // Inicia o loop de verificação
-            } else {
-                console.error('Erro ao enviar o vídeo:', data.error);
-                alert('Erro ao enviar o vídeo: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Erro ao transcrever o vídeo:', error));
-    };
-}
-
-// Eventos de fechamento de modal
-spanCloses.forEach(function(spanClose) {
-    spanClose.onclick = function() {
-        if (this.closest('.modal, .modalPrice')) {
-            this.closest('.modal, .modalPrice').style.display = "none";
-        }
-    };
-});
-
-// Eventos de clique
-if (btnCadastrar) btnCadastrar.onclick = function() { abrirModal(modal); };
-if (btnTranscrever_index) btnTranscrever_index.onclick = function() { abrirModal(modal); };
-if (btnIndexar_index) btnIndexar_index.onclick = function() { abrirModal(modal) };
-if (btnLogin) btnLogin.onclick = function() {
-     abrirModal(modalLogin);
-     var recuperePassword = document.getElementById("recoverPasswordBtn");
-     recuperePassword.style.display = "none"
-};
-if (btnContato) btnContato.addEventListener('click', function(event) {
-    event.preventDefault();
-    abrirModalContato();
-});
-
-var signButtons = getElements('.sign-button');
-signButtons.forEach(function(button) {
-    button.onclick = function() {
-        if (modalPrice) modalPrice.style.display = "none";
-        abrirModal(modal);
-        verificarCampos();
-    };
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Duplicação desnecessária destas variáveis
-    // Elas já foram definidas anteriormente no código
-    // var modalLogin = document.querySelector("#myModalLogin");
-    // var modalRecupere = document.querySelector("#modalRecupere");
-
-    if (modalRecupere) {
-        console.log("Modal Recupere encontrado:", !!modalRecupere);
-    }
-
-    var btnRecoverPassword = document.querySelector("#recoverPasswordBtn");
-
-    if (btnRecoverPassword) {
-        btnRecoverPassword.addEventListener('click', function() {
-            fetchRegisteredEmails();
-            emailInputLoginRecupere = document.querySelector('#loginemail');
-            if (registeredEmails.includes(emailInputLoginRecupere.value)) {
-                if (modalLogin) {
-                    modalLogin.style.display = "none";
-                }
-                if (modalRecupere) {
-                    modalRecupere.style.display = "block";
-                    limparInputs(modalRecupere);
-                } else {
-                    console.error("Modal de recuperação não encontrado.");
-                }
-            }
-            else {
-                modalLogin.style.display = "none";
-                modalRecupere.style.display = "none";
-            }});
-    }
-
-    registerForm_check = getElement("registerForm");
-    if (registerForm_check) {
-        registerForm_check.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-
-            fetch('/register', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(result => {
-
-            })
-            .catch(error => console.error('Error:', error));
-            executeActionAndShowModal();
-        });
-    }
-
-    loginForm_check = getElement("loginForm");
-    if (loginForm_check) {
-        loginForm_check.addEventListener('submit', function(event) {
-            event.preventDefault();
-            verificarSenhasLogin();
-            const formData = new FormData(this);
-
-            toggleLoadingSpinner(true);
-
-            fetch('/login', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                  // Se a resposta do servidor for 200 OK, redirecionar para logged.html
-                  setTimeout(for_logged, 3000);
-                  toggleLoadingSpinner(false);
-                } else {
-                  // Caso contrário, exibir uma mensagem de erro
-                  getElement('#loginpassword').setCustomValidity("Senha inválida");
-                  toggleLoadingSpinner(false);
-                }
-              })
-              .catch(error => {
-                    console.error('Error:', error);
-                    // Esconde a animação de carregamento em caso de erro
-                    toggleLoadingSpinner(false);
-                });
-        });
-    }
-
-    // Adicione o evento para verificar senhas ao input de senha
-    senhaInputLogin_check = getElement('#loginpassword');
-    if (senhaInputLogin_check) {
-        senhaInputLogin_check.addEventListener('input', verificarSenhasLogin);
-    }
-
-    // Adicionando eventos de input para disparar a verificação de senha
-    password_check = getElement('#password');
-    if (password_check) {
-        password_check.addEventListener('input', verificarSenhas);
-    }
-
-    passwordrepeat_check = getElement('#passwordrepeat');
-    if (passwordrepeat_check) {
-        passwordrepeat_check.addEventListener('input', verificarSenhas);
-    }
-
-    // Evento para verificar senhas no modal de recuperação
-    modalRecupere_check = getElement("#modalRecupere");
-    if (modalRecupere_check) {
-        modalRecupere_check.addEventListener('input', verificarSenhasRecupere);
-    }
-    // Adicione o evento para verificar senhas ao input de senha
-    emailInputLogin_check = document.querySelector('#loginemail');
-    if (emailInputLogin_check) {
-        fetchRegisteredEmails();
-        emailInputLogin_check.addEventListener('input', verificarEmailLogin);
-        var recuperePassword = document.getElementById("recoverPasswordBtn");
-        recuperePassword.style.display = "block";
-    }
-});
-
-// Função para buscar e-mails ao abrir o modal
-function fetchRegisteredEmails() {
-    fetch('/get_registered_emails')
-        .then(response => response.json())
-        .then(data => {
-            registeredEmails = data;
-        })
-        .catch(error => console.error('Erro ao buscar e-mails registrados:', error));
-}
-
-// Adicione a chamada para `fetchRegisteredEmails` quando o modal for aberto
-if (btnCadastrar) {
-    btnCadastrar.onclick = function() {
-        abrirModal(modal);
-        fetchRegisteredEmails();
-    };
-}
-
-var emailInput = document.querySelector('#email');
-var errorMessage = document.querySelector('#error-message');
-
-// Função para verificar se o e-mail está no banco de dados
-function verificarEmail() {
-    if (registeredEmails.includes(emailInput.value)) {
-        emailInput.style.backgroundColor = "#d3d3d3"; // Mesma cor que campo vazio
-        emailInput.style.color = "#000000";
-        emailInput.setCustomValidity("E-mail já existente.");
-    } else {
-        emailInput.style.backgroundColor = "#e8e8e8"; // Cor normal do campo
-        emailInput.style.color = "#000000";
-        errorMessage.textContent = '';
-        emailInput.setCustomValidity("");
-    }
-}
-
-loginemail = getElement('#loginemail');
-if (loginemail) {
-    fetchRegisteredEmails();
-    loginemail.addEventListener('input', verificarEmailLogin);
-    var recuperePassword = document.getElementById("recoverPasswordBtn");
-    recuperePassword.style.display = "block";
-}
-
-// Adicionando eventos de input para disparar a verificação de senha
-senhaInput = getElement('#password');
-repetirSenhaInput = getElement('#passwordrepeat');
-
-// Evento para disparar a verificação de senhas no modal de recuperação
-if (modalRecupere) {
-    modalRecupere.addEventListener('input', verificarSenhasRecupere);
-}
-
-// Verificação de senhas ao clicar no botão "Registrar"
-if (btnRegistrarRecupere) {
-    btnRegistrarRecupere.addEventListener('click', function(event) {
-        event.preventDefault(); // Previne o envio do formulário se as senhas estiverem diferentes
-
-        // Checa se os avisos de validação estão presentes
-        const repetirNovaSenha = modalRecupere.querySelector('#loginpasswordrecupere');
-        if (!repetirNovaSenha.checkValidity()) {
-            // Exibe mensagem de erro se houver
-            repetirNovaSenha.reportValidity();
-        } else {
-            // Senhas são iguais, prosseguir com a submissão do formulário
-            const emailInputLogin = document.querySelector('#loginemail').value;
-            const novaSenha = modalRecupere.querySelector('#loginemailrecupere').value;
-
-            fetch('/update_password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email: emailInputLogin, new_password: novaSenha })
-            })
-            .then(response => {
-                if (response.ok) {
-                    modalRecupere.style.display = "none";
-                    showMessageModalRecupere()
-                } else {
-                    alert("Erro ao alterar senha.");
-                    console.log(response.status);
-                }
-            })
-            .catch(error => console.error('Erro:', error));
-        }
-    });
-}

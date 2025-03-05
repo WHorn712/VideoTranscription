@@ -76,77 +76,75 @@
 
     <script src="https://js.stripe.com/v3/"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
             // Inicialize o Stripe com sua chave pública
-            const stripe = Stripe('pk_live_51QfKSfLTkDndcSCYfJMXijZ7hkFED8tWcKEIrf2WnwHuyLHLhYSWGLycsiiTdDpt5f8RxWR4VJsTlN52Vpz6gSpl00KUT67SMU');
+const stripe = Stripe('pk_live_51QfKSfLTkDndcSCYfJMXijZ7hkFED8tWcKEIrf2WnwHuyLHLhYSWGLycsiiTdDpt5f8RxWR4VJsTlN52Vpz6gSpl00KUT67SMU');
 
-            // Crie uma instância do Stripe Elements
-            const elements = stripe.elements();
+// Crie uma instância do Stripe Elements
+const elements = stripe.elements();
 
-            // Estilo para os elementos
-            const style = {
-                base: {
-                    color: '#32325d',
-                    fontFamily: 'Arial, sans-serif',
-                    fontSmoothing: 'antialiased',
-                    fontSize: '16px',
-                    '::placeholder': {
-                        color: '#aab7c4'
-                    }
-                },
-                invalid: {
-                    color: '#fa755a',
-                    iconColor: '#fa755a'
-                }
-            };
+// Estilo para os elementos
+const style = {
+    base: {
+        color: '#32325d',
+        fontFamily: 'Arial, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+            color: '#aab7c4'
+        }
+    },
+    invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+    }
+};
 
-            // Crie elementos separados
-            const card = elements.create('cardNumber', {style: style});
-            const cardExpiry = elements.create('cardExpiry', {style: style});
-            const cardCvc = elements.create('cardCvc', {style: style});
+// Crie elementos separados
+const card = elements.create('cardNumber', {style: style});
+const cardExpiry = elements.create('cardExpiry', {style: style});
+const cardCvc = elements.create('cardCvc', {style: style});
 
-            // Monte os elementos no DOM
-            card.mount('#card-element');
-            cardExpiry.mount('#card-expiry-element');
-            cardCvc.mount('#card-cvc-element');
+// Monte os elementos no DOM
+card.mount('#card-element');
+cardExpiry.mount('#card-expiry-element');
+cardCvc.mount('#card-cvc-element');
 
-            // Manipule erros em tempo real nos elementos
-            const errorElement = document.getElementById('card-errors');
-            card.on('change', function(event) {
-                if (event.error) {
-                    errorElement.textContent = event.error.message;
-                } else {
-                    errorElement.textContent = '';
-                }
-            });
+// Manipule erros em tempo real nos elementos
+const errorElement = document.getElementById('card-errors');
+card.addEventListener('change', function(event) {
+    if (event.error) {
+        errorElement.textContent = event.error.message;
+    } else {
+        errorElement.textContent = '';
+    }
+});
 
-            // Manipule o envio do formulário
-            const form_pagamento = document.getElementById('payment-form');
-            form_pagamento.addEventListener('submit', async (event) => {
-                event.preventDefault();
+// Manipule o envio do formulário
+const form_pagamento = document.getElementById('payment-form');
+form_pagamento.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-                const {token, error} = await stripe.createToken(card);
+    const {token, error} = await stripe.createToken(card);
 
-                if (error) {
-                    errorElement.textContent = error.message;
-                } else {
-                    stripeTokenHandler(token);
-                }
-            });
+    if (error) {
+        errorElement.textContent = error.message;
+    } else {
+        stripeTokenHandler(token);
+    }
+});
 
-            // Envia o token para o servidor
-            function stripeTokenHandler(token) {
-                const form_pagamento2 = document.getElementById('payment-form');
-                const hiddenInput = document.createElement('input');
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'stripeToken');
-                hiddenInput.setAttribute('value', token.id);
-                form_pagamento2.appendChild(hiddenInput);
+// Envia o token para o servidor
+function stripeTokenHandler(token) {
+    const form_pagamento2 = document.getElementById('payment-form');
+    const hiddenInput = document.createElement('input');
+    hiddenInput.setAttribute('type', 'hidden');
+    hiddenInput.setAttribute('name', 'stripeToken');
+    hiddenInput.setAttribute('value', token.id);
+    form_pagamento2.appendChild(hiddenInput);
 
-                // Submete o formulário
-                form_pagamento2.requestSubmit();
-            }
-        });
+    // Submete o formulário
+    form_pagamento2.requestSubmit();
+}
     </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
