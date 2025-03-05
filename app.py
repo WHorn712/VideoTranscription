@@ -304,28 +304,34 @@ def sobre_nos():
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
     if request.method == 'GET':
-        return render_template('pagamento.html', stripe_key=os.environ.get('STRIPE_PUBLIC_KEY'))
+        # Se for uma requisição GET, renderize o formulário de pagamento
+        return render_template('pagamento.html')
     elif request.method == 'POST':
         try:
+            # Obtenha o token do Stripe e o plano do formulário
             token = request.form.get('stripeToken')
             plan = request.form.get('plan')
+
             email = session.get('user_email')
             user = User.query.filter_by(email=email).first()
 
+
             if plan == 'basic':
                 plan_typeSignature = 2
-                price_id = 'price_1Qz1P0LTkDndcSCYcAFWMpZu'
+                price_id = 'price_1Qz1P0LTkDndcSCYcAFWMpZu'  # Substitua pelo seu price ID mensal real
             elif plan == 'standard':
                 plan_typeSignature = 1
-                price_id = 'price_1Qz1NrLTkDndcSCYd1kGyUAZ'
+                price_id = 'price_1Qz1NrLTkDndcSCYd1kGyUAZ'  # Substitua pelo seu price ID diário real
             else:
-                return render_template('pagamento.html', error='Plano inválido', stripe_key=os.environ.get('STRIPE_PUBLIC_KEY'))
+                return jsonify({'error': 'Plano inválido'}), 400
 
+            # Crie um cliente no Stripe
             customer = stripe.Customer.create(
                 email=email,
                 source=token,
             )
 
+            # Crie uma assinatura no Stripe
             subscription = stripe.Subscription.create(
                 customer=customer.id,
                 items=[
@@ -335,14 +341,17 @@ def pagamento():
                 ],
             )
 
+            # Atualize o typeSignature do usuário no banco de dados
             user.typeSignature = plan_typeSignature
             db.session.commit()
 
-            return render_template('pagamento_sucesso.html')
+            return render_template('pagamento_sucesso.html')  # Crie uma página de sucesso
         except stripe.error.CardError as e:
-            return render_template('pagamento.html', error=str(e), stripe_key=os.environ.get('STRIPE_PUBLIC_KEY'))
+            # Ocorreu um erro com o cartão
+            return jsonify({'error': str(e)}), 400
         except Exception as e:
-            return render_template('pagamento.html', error=str(e), stripe_key=os.environ.get('STRIPE_PUBLIC_KEY'))
+            # Outro erro ocorreu
+            return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
