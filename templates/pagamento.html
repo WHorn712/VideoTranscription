@@ -120,8 +120,8 @@ card.addEventListener('change', function(event) {
 });
 
 // Manipule o envio do formulário
-const form = document.getElementById('payment-form');
-form.addEventListener('submit', async (event) => {
+const form_pagamento = document.getElementById('payment-form');
+form_pagamento.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const {token, error} = await stripe.createToken(card);
@@ -135,15 +135,15 @@ form.addEventListener('submit', async (event) => {
 
 // Envia o token para o servidor
 function stripeTokenHandler(token) {
-    const form = document.getElementById('payment-form');
+    const form_pagamento2 = document.getElementById('payment-form');
     const hiddenInput = document.createElement('input');
     hiddenInput.setAttribute('type', 'hidden');
     hiddenInput.setAttribute('name', 'stripeToken');
     hiddenInput.setAttribute('value', token.id);
-    form.appendChild(hiddenInput);
+    form_pagamento2.appendChild(hiddenInput);
 
     // Submete o formulário
-    form.requestSubmit();
+    form_pagamento2.requestSubmit();
 }
     </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
