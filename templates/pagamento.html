@@ -15,6 +15,10 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -31,7 +35,12 @@
     <div class="container">
         <div class="profile-form">
             <h2 class="txt">Informações de Pagamento</h2>
-            <form id="payment-form">
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <form id="payment-form" method="POST" action="{{ url_for('pagamento') }}">
                 <div class="form-group">
                     <label for="plan">Escolha seu Plano:</label>
                     <select id="plan" name="plan">
@@ -76,75 +85,77 @@
 
     <script src="https://js.stripe.com/v3/"></script>
     <script>
-            // Inicialize o Stripe com sua chave pública
-const stripe = Stripe('pk_live_51QfKSfLTkDndcSCYfJMXijZ7hkFED8tWcKEIrf2WnwHuyLHLhYSWGLycsiiTdDpt5f8RxWR4VJsTlN52Vpz6gSpl00KUT67SMU');
+        // Inicialize o Stripe com sua chave pública
+        const stripe = Stripe('{{ stripe_key }}');
 
-// Crie uma instância do Stripe Elements
-const elements = stripe.elements();
+        // Crie uma instância do Stripe Elements
+        const elements = stripe.elements();
 
-// Estilo para os elementos
-const style = {
-    base: {
-        color: '#32325d',
-        fontFamily: 'Arial, sans-serif',
-        fontSmoothing: 'antialiased',
-        fontSize: '16px',
-        '::placeholder': {
-            color: '#aab7c4'
+        // Estilo para os elementos
+        const style = {
+            base: {
+                color: '#32325d',
+                fontFamily: 'Arial, sans-serif',
+                fontSmoothing: 'antialiased',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#fa755a',
+                iconColor: '#fa755a'
+            }
+        };
+
+        // Crie elementos separados
+        const card = elements.create('cardNumber', {style: style});
+        const cardExpiry = elements.create('cardExpiry', {style: style});
+        const cardCvc = elements.create('cardCvc', {style: style});
+
+        // Monte os elementos no DOM
+        card.mount('#card-element');
+        cardExpiry.mount('#card-expiry-element');
+        cardCvc.mount('#card-cvc-element');
+
+        // Manipule erros em tempo real nos elementos
+        const errorElement = document.getElementById('card-errors');
+        card.addEventListener('change', function(event) {
+            if (event.error) {
+                errorElement.textContent = event.error.message;
+            } else {
+                errorElement.textContent = '';
+            }
+        });
+
+        // Manipule o envio do formulário
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const {token, error} = await stripe.createToken(card);
+
+            if (error) {
+                errorElement.textContent = error.message;
+            } else {
+                stripeTokenHandler(token);
+            }
+        });
+
+        // Envia o token para o servidor
+        function stripeTokenHandler(token) {
+            const form = document.getElementById('payment-form');
+
+            // Adiciona o token ao formulário
+            const hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Envia o formulário
+            form.submit();
         }
-    },
-    invalid: {
-        color: '#fa755a',
-        iconColor: '#fa755a'
-    }
-};
-
-// Crie elementos separados
-const card = elements.create('cardNumber', {style: style});
-const cardExpiry = elements.create('cardExpiry', {style: style});
-const cardCvc = elements.create('cardCvc', {style: style});
-
-// Monte os elementos no DOM
-card.mount('#card-element');
-cardExpiry.mount('#card-expiry-element');
-cardCvc.mount('#card-cvc-element');
-
-// Manipule erros em tempo real nos elementos
-const errorElement = document.getElementById('card-errors');
-card.addEventListener('change', function(event) {
-    if (event.error) {
-        errorElement.textContent = event.error.message;
-    } else {
-        errorElement.textContent = '';
-    }
-});
-
-// Manipule o envio do formulário
-const form = document.getElementById('payment-form');
-form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const {token, error} = await stripe.createToken(card);
-
-    if (error) {
-        errorElement.textContent = error.message;
-    } else {
-        stripeTokenHandler(token);
-    }
-});
-
-// Envia o token para o servidor
-function stripeTokenHandler(token) {
-    const form = document.getElementById('payment-form');
-    const hiddenInput = document.createElement('input');
-    hiddenInput.setAttribute('type', 'hidden');
-    hiddenInput.setAttribute('name', 'stripeToken');
-    hiddenInput.setAttribute('value', token.id);
-    form.appendChild(hiddenInput);
-
-    // Submete o formulário
-    form.requestSubmit();
-}
     </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>

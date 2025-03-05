@@ -38,8 +38,6 @@ var video = document.createElement("video");
 var btnContatoRodape = getElement('.footer-links a:nth-child(3)');
 var emailExistenteBD = false;
 
-
-
 // Seleciona o botão de registrar do modal de recuperação
 var btnRegistrarRecupere = modalRecupere ? modalRecupere.querySelector('button[type="submit"]') : null;
 
@@ -112,7 +110,6 @@ if (btnLogin) {
     });
 }
 
-
 if (getElement('#fetch-video')) {
     getElement('#fetch-video').addEventListener('click', function() {
         const url = getElement('#videoLink').value;
@@ -147,7 +144,6 @@ if (fileInput) {
         }
     });
 }
-
 
 // Altere o comportamento do botão TRANSCREVER para enviar o vídeo
 if (btnTranscrever) {
@@ -218,7 +214,7 @@ function displayThumbnail(videoId) {
 // Função para limpar inputs de um modal
 function limparInputs(modal) {
     const inputs = modal.querySelectorAll('input');
-    inputs.forEach(input => input.value = ""); // Limpa os valores dos inputs
+    inputs.forEach(input => input.value = ""; // Limpa os valores dos inputs
 }
 
 // Funções para abrir modais
@@ -296,8 +292,6 @@ function abrirModalExit() {
     modalExit.style.display = "block";
 }
 
-
-
 if (form) {
     form.addEventListener('input', verificarCampos);
 }
@@ -356,8 +350,6 @@ function toggleLoadingSpinner(show) {
         loadingSpinner.style.display = show ? "block" : "none";
     }
 }
-
-
 
 document.addEventListener('DOMContentLoaded', function() {
     // Duplicação desnecessária destas variáveis
@@ -445,8 +437,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         toggleLoadingSpinner(false);
     });
 });
-
-
 
 // Função para buscar e-mails ao abrir o modal
 function fetchRegisteredEmails() {
@@ -661,11 +651,13 @@ if (btnRegistrarRecupere) {
     });
 }
 
-
-
-
-
-
-
-
-
+// Adicione este bloco para lidar com a validação do formulário de pagamento
+const paymentForm = document.getElementById('payment-form');
+if (paymentForm) {
+    paymentForm.addEventListener('submit', function(event) {
+        if (!paymentForm.checkValidity()) {
+            event.preventDefault();
+            alert('Por favor, preencha todos os campos obrigatórios.');
+        }
+    });
+}
