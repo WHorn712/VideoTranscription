@@ -78,6 +78,7 @@
     <script>
             // Inicialize o Stripe com sua chave pública
 const stripe = Stripe('pk_live_51QfKSfLTkDndcSCYfJMXijZ7hkFED8tWcKEIrf2WnwHuyLHLhYSWGLycsiiTdDpt5f8RxWR4VJsTlN52Vpz6gSpl00KUT67SMU');
+console.log("Stripe: aqui ", stripe);
 
 // Crie uma instância do Stripe Elements
 const elements = stripe.elements();
@@ -146,6 +147,5 @@ function stripeTokenHandler(token) {
     form_pagamento2.requestSubmit();
 }
     </script>
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
