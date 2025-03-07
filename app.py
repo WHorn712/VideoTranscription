@@ -303,17 +303,24 @@ def sobre_nos():
 
 @app.route('/pagamento', methods=['GET', 'POST'])
 def pagamento():
+    print("Rota /pagamento acessada!")
     if request.method == 'GET':
+        print("Requisição GET recebida para /pagamento")
         # Se for uma requisição GET, renderize o formulário de pagamento
         return render_template('pagamento.html')
     elif request.method == 'POST':
+        print("Requisição POST recebida para /pagamento")
         try:
             # Obtenha o token do Stripe e o plano do formulário
             token = request.form.get('stripeToken')
             plan = request.form.get('plan')
+            print(f"Token do Stripe recebido: {token}")
+            print(f"Plano recebido: {plan}")
 
             email = session.get('user_email')
             user = User.query.filter_by(email=email).first()
+            print(f"Email do usuário da sessão: {email}")
+            print(f"Dados do usuário do banco de dados: {user}")
 
 
             if plan == 'basic':
@@ -323,13 +330,16 @@ def pagamento():
                 plan_typeSignature = 1
                 price_id = 'price_1Qz1NrLTkDndcSCYd1kGyUAZ'  # Substitua pelo seu price ID diário real
             else:
+                print("Plano inválido selecionado")
                 return jsonify({'error': 'Plano inválido'}), 400
+            print(f"ID do preço do Stripe: {price_id}")
 
             # Crie um cliente no Stripe
             customer = stripe.Customer.create(
                 email=email,
                 source=token,
             )
+            print(f"Cliente do Stripe criado: {customer.id}")
 
             # Crie uma assinatura no Stripe
             subscription = stripe.Subscription.create(
@@ -340,17 +350,22 @@ def pagamento():
                     },
                 ],
             )
+            print(f"Assinatura do Stripe criada: {subscription.id}")
 
             # Atualize o typeSignature do usuário no banco de dados
             user.typeSignature = plan_typeSignature
             db.session.commit()
+            print("Dados do usuário atualizados no banco de dados")
 
+            print("Pagamento bem-sucedido! Renderizando pagamento_sucesso.html")
             return render_template('pagamento_sucesso.html')  # Crie uma página de sucesso
         except stripe.error.CardError as e:
             # Ocorreu um erro com o cartão
+            print(f"Erro no cartão: {str(e)}")
             return jsonify({'error': str(e)}), 400
         except Exception as e:
             # Outro erro ocorreu
+            print(f"Erro inesperado: {str(e)}")
             return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
