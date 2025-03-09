@@ -302,7 +302,7 @@ def sobre_nos():
     return render_template('tela_sobre_nos.html')
 
 @app.route('/pagamento_tela')
-def sobre_nos():
+def pagamento_tela():
     return render_template('pagamento.html')
 
 @app.route('/pagamento', methods=['POST'])
