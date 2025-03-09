@@ -301,27 +301,36 @@ def sobre_nos_logged():
 def sobre_nos():
     return render_template('tela_sobre_nos.html')
 
-@app.route('/pagamento', methods=['GET', 'POST'])
+@app.route('/pagamento', methods=['POST'])
 def pagamento():
     print("Rota /pagamento acessada!")
-    if request.method == 'GET':
-        print("Requisição GET recebida para /pagamento")
-        # Se for uma requisição GET, renderize o formulário de pagamento
-        return render_template('pagamento.html')
-    elif request.method == 'POST':
+    if request.method == 'POST':
         print("Requisição POST recebida para /pagamento")
         try:
-            # Obtenha o token do Stripe e o plano do formulário
-            token = request.form.get('stripeToken')
-            plan = request.form.get('plan')
+            # Obtenha os dados do JSON
+            data = request.get_json()
+            if not data:
+                print("Erro: Nenhum dado JSON recebido")
+                return jsonify({'error': 'Nenhum dado JSON recebido'}), 400
+            token = data.get('stripeToken')
+            plan = data.get('plan')
+            name = data.get('name')
+            email_form = data.get('email')  # Usando email_form para evitar conflito com email da sessão
+
             print(f"Token do Stripe recebido: {token}")
             print(f"Plano recebido: {plan}")
+            print(f"Nome recebido: {name}")
+            print(f"Email do formulário recebido: {email_form}")
 
-            email = session.get('user_email')
+            email = session.get('user_email')  # Obtém o email da sessão
+            if not email:
+                print("Erro: Email não encontrado na sessão")
+                return jsonify({'error': 'Email não encontrado na sessão'}), 400
+
             user = User.query.filter_by(email=email).first()
-            print(f"Email do usuário da sessão: {email}")
-            print(f"Dados do usuário do banco de dados: {user}")
-
+            if not user:
+                print("Erro: Usuário não encontrado no banco de dados")
+                return jsonify({'error': 'Usuário não encontrado no banco de dados'}), 404
 
             if plan == 'basic':
                 plan_typeSignature = 2
@@ -336,8 +345,9 @@ def pagamento():
 
             # Crie um cliente no Stripe
             customer = stripe.Customer.create(
-                email=email,
+                email=email_form,  # Usando o email do formulário
                 source=token,
+                name=name,
             )
             print(f"Cliente do Stripe criado: {customer.id}")
 
@@ -357,8 +367,8 @@ def pagamento():
             db.session.commit()
             print("Dados do usuário atualizados no banco de dados")
 
-            print("Pagamento bem-sucedido! Renderizando pagamento_sucesso.html")
-            return render_template('pagamento_sucesso.html')  # Crie uma página de sucesso
+            print("Pagamento bem-sucedido!")
+            return jsonify({'success': True, 'redirect': '/pagamento_sucesso'})
         except stripe.error.CardError as e:
             # Ocorreu um erro com o cartão
             print(f"Erro no cartão: {str(e)}")
@@ -367,6 +377,13 @@ def pagamento():
             # Outro erro ocorreu
             print(f"Erro inesperado: {str(e)}")
             return jsonify({'error': str(e)}), 500
+    else:
+        print("Requisição GET recebida para /pagamento - Não permitida")
+        return jsonify({'error': 'Método não permitido'}), 405
+
+@app.route('/pagamento_sucesso')
+def pagamento_sucesso():
+    return render_template('pagamento_sucesso.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

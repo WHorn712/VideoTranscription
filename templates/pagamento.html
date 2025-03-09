@@ -31,10 +31,10 @@
     <div class="container">
         <div class="profile-form">
             <h2 class="txt">Informações de Pagamento</h2>
-            <form id="payment-form" method="post">
+            <form id="payment-form">
                 <div class="form-group">
                     <label for="plan">Escolha seu Plano:</label>
-                    <select id="plan" name="plan">
+                    <select id="plan" name="plan" id="plan">
                         <option value="standard">Mensal - R$9,90/mês</option>
                         <option value="basic">Diário - R$3,90/dia</option>
                     </select>
@@ -143,7 +143,48 @@
                     errorElement.textContent = error.message;
                 } else {
                     console.log("Token criado com sucesso:", token);
-                    stripeTokenHandler(token);
+
+                    // Coleta os dados do formulário
+                    const plan = document.getElementById('plan').value;
+                    const name = document.getElementById('name').value;
+                    const email = document.getElementById('email').value;
+
+                    // Cria um objeto com os dados a serem enviados
+                    const data = {
+                        stripeToken: token.id,
+                        plan: plan,
+                        name: name,
+                        email: email
+                    };
+
+                    // Envia os dados usando fetch
+                    fetch('/pagamento', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json' // Indica que estamos enviando JSON
+                        },
+                        body: JSON.stringify(data) // Converte o objeto para JSON
+                    })
+                    .then(response => {
+                        console.log("Resposta do servidor:", response);
+                        if (response.ok) {
+                            // Se a resposta for bem-sucedida, redirecione para a página de sucesso
+                            window.location.href = '/pagamento_sucesso';
+                        } else {
+                            // Se ocorrer um erro, exiba a mensagem de erro
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        if (data && data.error) {
+                            console.error("Erro do servidor:", data.error);
+                            errorElement.textContent = data.error;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao enviar dados:", error);
+                        errorElement.textContent = "Ocorreu um erro inesperado ao processar o pagamento.";
+                    });
                 }
             } catch (e) {
                 console.error("Erro na criação do token:", e);
@@ -152,21 +193,8 @@
         });
         console.log("Listener de submit adicionado ao formulário");
 
-        // Envia o token para o servidor
-        function stripeTokenHandler(token) {
-            console.log("stripeTokenHandler chamado com token:", token);
-            const form_pagamento2 = document.getElementById('payment-form');
-            const hiddenInput = document.createElement('input');
-            hiddenInput.setAttribute('type', 'hidden');
-            hiddenInput.setAttribute('name', 'stripeToken');
-            hiddenInput.setAttribute('value', token.id);
-            form_pagamento2.appendChild(hiddenInput);
-            console.log("Campo stripeToken adicionado ao formulário");
-
-            console.log("Submetendo o formulário...");
-            form_pagamento2.requestSubmit();
-            console.log("Formulário submetido!");
-        }
+        // Remove a função stripeTokenHandler, pois não é mais necessária
+        // function stripeTokenHandler(token) { ... }
     </script>
 </body>
 </html>
