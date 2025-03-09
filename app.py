@@ -259,7 +259,7 @@ def perfil_logged():
     if not user:
         return "Usuário não encontrado", 404
 
-    assinatura_text = "SEM PLANO" if user.typeSignature == 0 else "COM PLANO"
+    assinatura_text = "SEM PLANO" if user.typeSignature == 0 else "PLANO MENSAL" if user.typeSignature == 1 else "VÁLIDO POR 1 DIA"
     user_data = {
         "nome": user.nome,
         "email": user.email,
