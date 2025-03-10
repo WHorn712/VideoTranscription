@@ -232,6 +232,8 @@ def login():
 @app.route('/logged')
 def logged():
     username = session.get('username')
+    user_email = session.get('user_email')
+    print(user_email)
     if username:
         return render_template('logged.html', username=username)
     return redirect(url_for('login'))
