@@ -189,7 +189,7 @@ if (btnTranscrever) {
                     .catch(error => console.error('Erro ao transcrever o vídeo:', error));
                 } else {
                     // Exiba uma mensagem de erro no console se o typeSignature for 0
-                    window.location.href = 'pagamento.html';
+                    window.location.href = 'pagamento_tela.html';
                 }
             })
             .catch(error => {
