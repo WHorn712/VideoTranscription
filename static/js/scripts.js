@@ -150,6 +150,7 @@ if (fileInput) {
 
 
 // Altere o comportamento do botão TRANSCREVER para enviar o vídeo
+// Altere o comportamento do botão TRANSCREVER para enviar o vídeo
 if (btnTranscrever) {
     btnTranscrever.onclick = function() {
         if (!selectedFile) {
@@ -157,24 +158,44 @@ if (btnTranscrever) {
             return;
         }
 
-        var formData = new FormData();
-        formData.append('file', selectedFile);
+        // Verifique o typeSignature antes de enviar o vídeo
+        fetch('/get_type_signature')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Não foi possível obter o typeSignature');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.typeSignature === 1 || data.typeSignature === 2) {
+                    // Envie o vídeo para transcrição apenas se o typeSignature for 1 ou 2
+                    var formData = new FormData();
+                    formData.append('file', selectedFile);
 
-        fetch('/transcrever', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message === "Vídeo enviado para transcrição com sucesso.") {
-                alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
-                startPolling(data.video_id); // Inicia o loop de verificação
-            } else {
-                console.error('Erro ao enviar o vídeo:', data.error);
-                alert('Erro ao enviar o vídeo: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Erro ao transcrever o vídeo:', error));
+                    fetch('/transcrever', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === "Vídeo enviado para transcrição com sucesso.") {
+                            alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
+                            startPolling(data.video_id); // Inicia o loop de verificação
+                        } else {
+                            console.error('Erro ao enviar o vídeo:', data.error);
+                            alert('Erro ao enviar o vídeo: ' + data.error);
+                        }
+                    })
+                    .catch(error => console.error('Erro ao transcrever o vídeo:', error));
+                } else {
+                    // Exiba uma mensagem de erro no console se o typeSignature for 0
+                    window.location.href = 'pagamento.html';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao verificar o typeSignature:', error);
+                alert('Erro ao verificar o plano. Tente novamente mais tarde.');
+            });
     };
 }
 
