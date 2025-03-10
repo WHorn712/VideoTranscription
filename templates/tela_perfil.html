@@ -6,6 +6,31 @@
     <title>Perfil do Usuário</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Ethiopic+Condensed&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <style>
+        .cancel-button-container {
+            text-align: right;
+            margin-top: 10px; /* Ajuste conforme necessário */
+        }
+
+        /* Estilo para o botão "Cancelar" sem destaque */
+        .cancel-button {
+            background-color: transparent; /* Fundo transparente */
+            border: 1px solid #ccc; /* Borda cinza clara */
+            color: #555; /* Cor do texto cinza */
+            padding: 8px 16px; /* Espaçamento interno */
+            text-decoration: none; /* Remove sublinhado padrão de links */
+            border-radius: 4px; /* Borda arredondada */
+            cursor: pointer; /* Altera o cursor ao passar por cima */
+            display: inline-block; /* Permite ajustar largura e altura */
+            font-size: 14px; /* Tamanho da fonte */
+            transition: background-color 0.3s, color 0.3s; /* Transição suave */
+        }
+
+        .cancel-button:hover {
+            background-color: #eee; /* Fundo levemente mais escuro no hover */
+            color: #333; /* Cor do texto mais escura no hover */
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -47,6 +72,11 @@
                 </div>
                 <a href="{{ url_for('pagamento_tela') }}" class="custom-button sign-button">Assinar</a>
             </form>
+            {% if user.assinatura == "PLANO MENSAL" %}
+                <div class="cancel-button-container">
+                    <a href="#" class="cancel-button">Cancelar</a>
+                </div>
+            {% endif %}
         </div>
     </div>
     <br>
