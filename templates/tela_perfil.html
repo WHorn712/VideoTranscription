@@ -70,7 +70,9 @@
                     <label for="signature">Assinatura:</label>
                     <input type="text" id="signature" name="signature" value="{{ user.assinatura }}" readonly>
                 </div>
-                <a href="{{ url_for('pagamento_tela') }}" class="custom-button sign-button">Assinar</a>
+                {% if user.assinatura != "PLANO MENSAL" %}
+                    <a href="{{ url_for('pagamento_tela') }}" class="custom-button sign-button">Assinar</a>
+                {% endif %}
             </form>
             {% if user.assinatura == "PLANO MENSAL" %}
                 <div class="cancel-button-container">
