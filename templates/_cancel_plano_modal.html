@@ -1,0 +1,62 @@
+<!-- Modal de Confirmação de Cancelamento de Plano -->
+<div id="myModalCancel" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 class="txt centralizado">Tem certeza que deseja cancelar seu plano?</h2>
+        <div class="button-group">
+            <button type="button" id="btnYesCancel" class="btn-confirm">Sim</button>
+            <button type="button" id="btnNoCancel" class="btn-cancel">Não</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Certifique-se de que o modal exista
+        var modalCancel = document.querySelector("#myModalCancel");
+
+        if (modalCancel) {
+            var btnCancel = document.querySelector(".cancel-button"); // Seleciona o botão "Cancelar" da tela de perfil
+            var btnYesCancel = document.querySelector("#btnYesCancel");
+            var btnNoCancel = document.querySelector("#btnNoCancel");
+            var spanCloseCancel = modalCancel.querySelector(".close");
+
+            // Função para abrir o modal de cancelamento
+            function abrirModalCancel() {
+                modalCancel.style.display = "block";
+            }
+
+            // Evento para abrir o modal ao clicar em "Cancelar"
+            if (btnCancel) {
+                btnCancel.addEventListener('click', function(event) {
+                    event.preventDefault(); // Evita que o link redirecione
+                    abrirModalCancel();
+                });
+            }
+
+            // Evento para fechar o modal ao clicar em "Não" ou no ícone de fechar
+            if (btnNoCancel) {
+                btnNoCancel.addEventListener('click', function() {
+                    modalCancel.style.display = "none";
+                });
+            }
+
+            if (spanCloseCancel) {
+                spanCloseCancel.addEventListener('click', function() {
+                    modalCancel.style.display = "none";
+                });
+            }
+
+            // Evento para confirmar o cancelamento e redirecionar para index.html (POR ENQUANTO SEM AÇÃO)
+            if (btnYesCancel) {
+                btnYesCancel.addEventListener('click', function() {
+                    // ADICIONAR A LÓGICA DE CANCELAMENTO AQUI
+                    console.log("Botão 'Sim' clicado. Lógica de cancelamento a ser implementada.");
+                    modalCancel.style.display = "none"; // Apenas fecha o modal por enquanto
+                });
+            }
+        } else {
+            console.error("Modal '#myModalCancel' não encontrado.");
+        }
+    });
+</script>
