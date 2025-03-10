@@ -119,6 +119,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha = db.Column(db.String(255), nullable=False)
     typeSignature = db.Column(db.Integer)
+    subscription_id = db.Column(db.String(255), nullable=True)
 
 ### Rotas para gerenciar typeSignature ###
 @app.route('/get_type_signature', methods=['GET'])
@@ -368,6 +369,7 @@ def pagamento():
 
             # Atualize o typeSignature do usuário no banco de dados
             user.typeSignature = plan_typeSignature
+            user.subscription_id = subscription.id
             db.session.commit()
             print("Dados do usuário atualizados no banco de dados")
 
@@ -384,6 +386,34 @@ def pagamento():
     else:
         print("Requisição GET recebida para /pagamento - Não permitida")
         return jsonify({'error': 'Método não permitido'}), 405
+
+@app.route('/cancelar_plano', methods=['POST'])
+def cancelar_plano():
+    email = session.get('user_email')
+    if not email:
+        return jsonify({"error": "Usuário não autenticado"}), 401
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "Usuário não encontrado"}), 404
+
+    try:
+        # Cancela a assinatura no Stripe usando o subscription_id do usuário
+        if user.subscription_id:
+            stripe.Subscription.delete(user.subscription_id)  # Cancela a assinatura
+
+            # Atualizar o typeSignature do usuário no banco de dados para 0 (SEM PLANO) e limpar o subscription_id
+            user.typeSignature = 0
+            user.subscription_id = None
+            db.session.commit()
+
+            return jsonify({"success": True, "message": "Plano cancelado com sucesso"}), 200
+        else:
+            return jsonify({"error": "Nenhuma assinatura ativa encontrada para este usuário"}), 404
+
+    except Exception as e:
+        print(f"Erro ao cancelar o plano: {str(e)}")
+        return jsonify({"error": "Erro ao cancelar o plano"}), 500
 
 @app.route('/pagamento_sucesso')
 def pagamento_sucesso():
