@@ -133,7 +133,26 @@ if (getElement('#logoButton')) {
 
 if (indexarBtn) {
     indexarBtn.addEventListener('click', function() {
-        if (fileInput) fileInput.click();
+        // Verifique o typeSignature antes de permitir a indexação
+        fetch('/get_type_signature')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Não foi possível obter o typeSignature');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.typeSignature === 1 || data.typeSignature === 2) {
+                    // Permita a indexação apenas se o typeSignature for 1 ou 2
+                    if (fileInput) fileInput.click();
+                } else {
+                    window.location.href = 'pagamento_tela';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao verificar o typeSignature:', error);
+                alert('Erro ao verificar o plano. Tente novamente mais tarde.');
+            });
     });
 }
 
