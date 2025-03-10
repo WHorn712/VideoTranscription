@@ -198,9 +198,15 @@ def get_registered_emails():
 
 @app.route('/verify_user_password', methods=['POST'])
 def verify_user_password():
-    data = request.json
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Nenhum dado JSON recebido"}), 400
+
     email = data.get('email')
     password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Dados incompletos"}), 400
 
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.senha, password):
