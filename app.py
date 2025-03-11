@@ -473,6 +473,7 @@ def check_daily_plan_internal():
 
             for user in users:
                 print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
+                print("DATAL ATUAL: ", now)
                 if user.daily_plan_expiration <= now:
                     # O plano expirou, cancelar
                     user.typeSignature = 0
