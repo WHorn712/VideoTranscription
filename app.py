@@ -390,7 +390,7 @@ def pagamento():
 
             # Para pagamentos únicos (plano diário), utilize stripe.charges.create
             if plan == 'basic':
-                charge = stripe.charges.create(
+                charge = stripe.Charge.create(
                     amount=390,  # R$3,90 em centavos
                     currency='brl',
                     customer=customer.id,
