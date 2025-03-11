@@ -8,6 +8,7 @@ import requests
 from werkzeug.utils import secure_filename
 import uuid
 import threading
+import datetime
 
 app = Flask(__name__)
 
@@ -38,6 +39,7 @@ transcription_results = {}
 # Rota para receber o vídeo e iniciar a transcrição
 @app.route('/transcrever', methods=['POST'])
 def transcrever():
+    check_daily_plan_internal()
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file provided"}), 400
@@ -82,6 +84,7 @@ def send_video_for_transcription(video_filename, video_path, video_id):
 # Rota para receber a notificação do webhook
 @app.route('/transcription_webhook', methods=['POST'])
 def transcription_webhook():
+    check_daily_plan_internal()
     # Verifique a autenticidade da requisição
     webhook_token = request.headers.get('X-Webhook-Token')
     print("error rota")
@@ -103,6 +106,7 @@ def transcription_webhook():
 # Rota para verificar o status da transcrição
 @app.route('/transcription_status', methods=['GET'])
 def transcription_status():
+    check_daily_plan_internal()
     print("transcription_status")
     video_id = request.args.get('video_id')
     print("transcription_status_videoID: ", video_id)
@@ -120,10 +124,12 @@ class User(db.Model):
     senha = db.Column(db.String(255), nullable=False)
     typeSignature = db.Column(db.Integer)
     subscription_id = db.Column(db.String(255), nullable=True)
+    daily_plan_expiration = db.Column(db.DateTime, nullable=True)
 
 ### Rotas para gerenciar typeSignature ###
 @app.route('/get_type_signature', methods=['GET'])
 def get_type_signature():
+    check_daily_plan_internal()
     email = session.get('user_email')
     if not email:
         return jsonify({"error": "Usuário não autenticado"}), 401
@@ -136,6 +142,7 @@ def get_type_signature():
 
 @app.route('/update_type_signature', methods=['POST'])
 def update_type_signature():
+    check_daily_plan_internal()
     email = session.get('user_email')
     if not email:
         return jsonify({"error": "Usuário não autenticado"}), 401
@@ -158,14 +165,17 @@ def update_type_signature():
 
 @app.route('/')
 def index():
+    check_daily_plan_internal()
     return render_template('index.html')
 
 @app.route('/get-username')
 def get_username():
+    check_daily_plan_internal()
     return jsonify(message=session.get('username', ''))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    check_daily_plan_internal()
     error_message = None
 
     if request.method == 'POST':
@@ -192,12 +202,14 @@ def register():
 
 @app.route('/get_registered_emails', methods=['GET'])
 def get_registered_emails():
+    check_daily_plan_internal()
     users = User.query.with_entities(User.email).all()
     email_list = [user.email for user in users]
     return jsonify(email_list)
 
 @app.route('/verify_user_password', methods=['POST'])
 def verify_user_password():
+    check_daily_plan_internal()
     data = request.get_json()
     if not data:
         return jsonify({"error": "Nenhum dado JSON recebido"}), 400
@@ -216,6 +228,7 @@ def verify_user_password():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    check_daily_plan_internal()
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -231,6 +244,7 @@ def login():
 
 @app.route('/logged')
 def logged():
+    check_daily_plan_internal()
     username = session.get('username')
     if username:
         return render_template('logged.html', username=username)
@@ -238,6 +252,7 @@ def logged():
 
 @app.route('/update_password', methods=['POST'])
 def update_password():
+    check_daily_plan_internal()
     data = request.json
     email = data.get('email')
     new_password = data.get('new_password')
@@ -257,6 +272,7 @@ def update_password():
 
 @app.route('/perfil-logged')
 def perfil_logged():
+    check_daily_plan_internal()
     email = session.get('user_email')
     if not email:
         return redirect(url_for('login'))
@@ -278,42 +294,52 @@ def perfil_logged():
 
 @app.route('/como-usar-logged')
 def como_usar_logged():
+    check_daily_plan_internal()
     return render_template('tela_como_usar_logged.html')
 
 @app.route('/como-usar')
 def como_usar():
+    check_daily_plan_internal()
     return render_template('tela_como_usar.html')
 
 @app.route('/termos-de-servico-logged')
 def termos_de_servico_logged():
+    check_daily_plan_internal()
     return render_template('tela_termos_de_servico_logged.html')
 
 @app.route('/termos-de-servico')
 def termos_de_servico():
+    check_daily_plan_internal()
     return render_template('tela_termos_de_servico.html')
 
 @app.route('/politica-de-privacidade-logged')
 def politica_de_privacidade_logged():
+    check_daily_plan_internal()
     return render_template('tela_politica_de_privacidade_logged.html')
 
 @app.route('/politica-de-privacidade')
 def politica_de_privacidade():
+    check_daily_plan_internal()
     return render_template('tela_politica_de_privacidade.html')
 
 @app.route('/sobre-nos-logged')
 def sobre_nos_logged():
+    check_daily_plan_internal()
     return render_template('tela_sobre_nos_logged.html')
 
 @app.route('/sobre-nos')
 def sobre_nos():
+    check_daily_plan_internal()
     return render_template('tela_sobre_nos.html')
 
 @app.route('/pagamento_tela')
 def pagamento_tela():
+    check_daily_plan_internal()
     return render_template('pagamento.html')
 
 @app.route('/pagamento', methods=['POST'])
 def pagamento():
+    check_daily_plan_internal()
     print("Rota /pagamento acessada!")
     if request.method == 'POST':
         print("Requisição POST recebida para /pagamento")
@@ -376,6 +402,12 @@ def pagamento():
             # Atualize o typeSignature do usuário no banco de dados
             user.typeSignature = plan_typeSignature
             user.subscription_id = subscription.id
+            # Se for o plano diário, inicialize o expiration
+            if plan_typeSignature == 2:
+                user.daily_plan_expiration = datetime.utcnow() + datetime.timedelta(hours=24)
+            else:
+                user.daily_plan_expiration = None
+
             db.session.commit()
             print("Dados do usuário atualizados no banco de dados")
 
@@ -395,6 +427,7 @@ def pagamento():
 
 @app.route('/cancelar_plano', methods=['POST'])
 def cancelar_plano():
+    check_daily_plan_internal()
     email = session.get('user_email')
     if not email:
         return jsonify({"error": "Usuário não autenticado"}), 401
@@ -423,7 +456,25 @@ def cancelar_plano():
 
 @app.route('/pagamento_sucesso')
 def pagamento_sucesso():
+    check_daily_plan_internal()
     return render_template('pagamento_sucesso.html')
+
+# Função para verificar e atualizar o plano diário internamente
+def check_daily_plan_internal():
+    try:
+        with app.app_context():
+            now = datetime.utcnow()
+            users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
+
+            for user in users:
+                if user.daily_plan_expiration <= now:
+                    # O plano expirou, cancelar
+                    user.typeSignature = 0
+                    user.daily_plan_expiration = None
+                    db.session.commit()
+                    print(f"Plano diário expirado para o usuário: {user.email}")
+    except Exception as e:
+        print(f"Erro ao verificar o plano diário: {str(e)}")
 
 if __name__ == '__main__':
     app.run(debug=True)
