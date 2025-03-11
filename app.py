@@ -388,24 +388,29 @@ def pagamento():
             )
             print(f"Cliente do Stripe criado: {customer.id}")
 
-            # Crie uma assinatura no Stripe
-            subscription = stripe.Subscription.create(
-                customer=customer.id,
-                items=[
-                    {
-                        "price": price_id,
-                    },
-                ],
-            )
-            print(f"Assinatura do Stripe criada: {subscription.id}")
+            # Para pagamentos únicos (plano diário), utilize stripe.charges.create
+            if plan == 'basic':
+                charge = stripe.charges.create(
+                    amount=390,  # R$3,90 em centavos
+                    currency='brl',
+                    customer=customer.id,
+                    description='Pagamento único para plano diário'
+                )
+                user.typeSignature = plan_typeSignature
+                user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
+                user.daily_plan_expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
 
-            # Atualize o typeSignature do usuário no banco de dados
-            user.typeSignature = plan_typeSignature
-            user.subscription_id = subscription.id
-            # Se for o plano diário, inicialize o expiration
-            if plan_typeSignature == 2:
-                user.daily_plan_expiration = datetime.utcnow() + datetime.timedelta(hours=24)
-            else:
+
+            # Para assinaturas (plano mensal), utilize stripe.Subscription.create
+            elif plan == 'standard':
+                subscription = stripe.Subscription.create(
+                    customer=customer.id,
+                    items=[{
+                        "price": price_id,
+                    }],
+                )
+                user.typeSignature = plan_typeSignature
+                user.subscription_id = subscription.id
                 user.daily_plan_expiration = None
 
             db.session.commit()
