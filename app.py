@@ -472,6 +472,7 @@ def check_daily_plan_internal():
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
+                print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
                 if user.daily_plan_expiration <= now:
                     # O plano expirou, cancelar
                     user.typeSignature = 0
