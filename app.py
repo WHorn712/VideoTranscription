@@ -468,7 +468,7 @@ def pagamento_sucesso():
 def check_daily_plan_internal():
     try:
         with app.app_context():
-            now = datetime.utcnow()
+            now = datetime.datetime.utcnow()
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
