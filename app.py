@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 import uuid
 import threading
 import datetime
+import pytz
 
 app = Flask(__name__)
 
@@ -340,6 +341,9 @@ def pagamento_tela():
 @app.route('/pagamento', methods=['POST'])
 def pagamento():
     check_daily_plan_internal()
+    brasilia_tz = pytz.timezone('America/Sao_Paulo')
+    now_utc = datetime.datetime.utcnow()
+    now_brasilia = now_utc.replace(tzinfo=pytz.utc).astimezone(brasilia_tz)
     print("Rota /pagamento acessada!")
     if request.method == 'POST':
         print("Requisição POST recebida para /pagamento")
@@ -398,7 +402,7 @@ def pagamento():
                 )
                 user.typeSignature = plan_typeSignature
                 user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
-                user.daily_plan_expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+                user.daily_plan_expiration = now_brasilia + datetime.timedelta(hours=24)
 
 
             # Para assinaturas (plano mensal), utilize stripe.Subscription.create
@@ -468,13 +472,16 @@ def pagamento_sucesso():
 def check_daily_plan_internal():
     try:
         with app.app_context():
+            brasilia_tz = pytz.timezone('America/Sao_Paulo')
+            now_utc = datetime.datetime.utcnow()
+            now_brasilia = now_utc.replace(tzinfo=pytz.utc).astimezone(brasilia_tz)
             now = datetime.datetime.utcnow()
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
                 print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
-                print("DATAL ATUAL: ", now)
-                if user.daily_plan_expiration <= now:
+                print("DATAL ATUAL: ", now_brasilia)
+                if user.daily_plan_expiration <= now_brasilia:
                     # O plano expirou, cancelar
                     user.typeSignature = 0
                     user.daily_plan_expiration = None
