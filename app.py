@@ -497,12 +497,15 @@ def check_daily_plan_internal():
                     expiration_time_brasilia = expiration_time_utc.astimezone(brasilia_tz)
 
                     # Comparar as datas
+                    print("NOW: ", now_brasilia)
+                    print("ASSINATURA: ", expiration_time_brasilia)
                     if expiration_time_brasilia <= now_brasilia:
                         # O plano expirou, cancelar
                         user.typeSignature = 0
                         user.daily_plan_expiration = None
                         db.session.commit()
                         print(f"Plano diário expirado para o usuário: {user.email}")
+
         print("COMPARAÇÃO REALIZADA COM SUCESSO")
 
     except Exception as e:
