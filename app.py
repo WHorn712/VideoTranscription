@@ -247,6 +247,10 @@ def login():
 def logged():
     check_daily_plan_internal()
     username = session.get('username')
+    user = User.query.filter_by(email=session.get("user_email")).first()
+    user.typeSignature = 0
+    user.subscription_id = None
+    user.daily_plan_expiration = None
 
     if username:
         return render_template('logged.html', username=username)
@@ -403,8 +407,11 @@ def pagamento():
                 )
                 user.typeSignature = plan_typeSignature
                 user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
-                # Defina a data de expiração com timezone de Brasília
                 expiration_time = now_brasilia + datetime.timedelta(hours=24)
+
+                # Converta para UTC antes de salvar no banco de dados
+                expiration_time_utc = expiration_time.astimezone(pytz.utc)
+                user.daily_plan_expiration = expiration_time_utc
 
                 # Garante que expiration_time seja offset-aware
                 if expiration_time.tzinfo is None or expiration_time.tzinfo.utcoffset(expiration_time) is None:
@@ -488,8 +495,13 @@ def check_daily_plan_internal():
 
             for user in users:
                 if user.daily_plan_expiration is not None:
+                    # Converta a data de expiração do banco de dados para Brasília
+                    expiration_time_utc = user.daily_plan_expiration.replace(tzinfo=pytz.utc)
+
+                    expiration_time_brasilia = expiration_time_utc.astimezone(brasilia_tz)
+
                     # Comparar as datas
-                    if user.daily_plan_expiration <= now_brasilia:
+                    if expiration_time_brasilia <= now_brasilia:
                         # O plano expirou, cancelar
                         user.typeSignature = 0
                         user.daily_plan_expiration = None
