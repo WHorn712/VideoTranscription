@@ -247,15 +247,6 @@ def login():
 def logged():
     check_daily_plan_internal()
     username = session.get('username')
-    user = User.query.filter_by(email=session.get('user_email')).first()
-    typeSignature = db.Column(db.Integer)
-    subscription_id = db.Column(db.String(255), nullable=True)
-    daily_plan_expiration = db.Column(db.DateTime, nullable=True)
-    user.typeSignature = 0
-    user.subscription_id = None
-    user.daily_plan_expiration = None
-    db.session.commit()
-    print("PERFEITO LOGGED")
 
     if username:
         return render_template('logged.html', username=username)
@@ -413,6 +404,7 @@ def pagamento():
                 user.typeSignature = plan_typeSignature
                 user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
                 user.daily_plan_expiration = now_brasilia + datetime.timedelta(hours=24)
+                print("DIA DE VENCIMENTO: ", user.daily_plan_expiration)
 
 
             # Para assinaturas (plano mensal), utilize stripe.Subscription.create
