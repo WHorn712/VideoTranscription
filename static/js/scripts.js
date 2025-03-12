@@ -310,8 +310,32 @@ signButtons.forEach(function(button) {
         if (modalPrice) modalPrice.style.display = "none";
         abrirModal(modal);
         verificarCampos();
+        verificarStatusERedirecionar();
     };
 });
+
+function verificarStatusERedirecionar() {
+    fetch('/get_type_signature')  // Substitua '/sua_nova_rota' pela rota real
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao obter o status');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const status = data.status;  // Supondo que a resposta JSON contenha um campo 'status' com o número inteiro
+
+            if (status === 0) {
+                window.location.href = 'pagamento_tela';  // Redireciona para a tela de pagamento
+            } else {
+                window.location.href = 'perfil-logged';  // Redireciona para a tela de perfil
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao verificar o status:', error);
+            alert('Erro ao verificar o status. Tente novamente mais tarde.');
+        });
+}
 
 // Verificação de campos
 function verificarCampos() {

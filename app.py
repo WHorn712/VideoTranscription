@@ -208,6 +208,13 @@ def get_registered_emails():
     email_list = [user.email for user in users]
     return jsonify(email_list)
 
+@app.route('/get_typeSignature', methods=['GET'])
+def get_typeSignature():
+    check_daily_plan_internal()
+    user = User.query.filter_by(email=session.get('user_email')).first()
+    type_signature = user.typeSignature
+    return jsonify(type_signature)
+
 @app.route('/verify_user_password', methods=['POST'])
 def verify_user_password():
     check_daily_plan_internal()
