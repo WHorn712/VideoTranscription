@@ -247,11 +247,6 @@ def login():
 def logged():
     check_daily_plan_internal()
     username = session.get('username')
-    user = User.query.filter_by(email=session.get('user_email')).first()
-    user.typeSignature = 0
-    user.subscription_id = None
-    user.daily_plan_expiration = None
-    db.session.commit()
 
     if username:
         return render_template('logged.html', username=username)
@@ -408,7 +403,14 @@ def pagamento():
                 )
                 user.typeSignature = plan_typeSignature
                 user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
-                user.daily_plan_expiration = now_brasilia + datetime.timedelta(hours=24)
+                # Defina a data de expiração com timezone de Brasília
+                expiration_time = now_brasilia + datetime.timedelta(hours=24)
+
+                # Garante que expiration_time seja offset-aware
+                if expiration_time.tzinfo is None or expiration_time.tzinfo.utcoffset(expiration_time) is None:
+                    expiration_time = brasilia_tz.localize(expiration_time)
+
+                user.daily_plan_expiration = expiration_time
 
 
             # Para assinaturas (plano mensal), utilize stripe.Subscription.create
@@ -486,12 +488,14 @@ def check_daily_plan_internal():
 
             for user in users:
                 if user.daily_plan_expiration is not None:
+                    # Comparar as datas
                     if user.daily_plan_expiration <= now_brasilia:
                         # O plano expirou, cancelar
                         user.typeSignature = 0
                         user.daily_plan_expiration = None
                         db.session.commit()
                         print(f"Plano diário expirado para o usuário: {user.email}")
+        print("COMPARAÇÃO REALIZADA COM SUCESSO")
 
     except Exception as e:
         print(f"Erro ao verificar o plano diário: {str(e)}")
