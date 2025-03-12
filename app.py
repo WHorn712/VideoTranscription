@@ -247,6 +247,16 @@ def login():
 def logged():
     check_daily_plan_internal()
     username = session.get('username')
+    user = User.query.filter_by(email=session.get('user_email')).first()
+    typeSignature = db.Column(db.Integer)
+    subscription_id = db.Column(db.String(255), nullable=True)
+    daily_plan_expiration = db.Column(db.DateTime, nullable=True)
+    user.typeSignature = 0
+    user.subscription_id = None
+    user.daily_plan_expiration = None
+    db.session.commit()
+    print("PERFEITO LOGGED")
+
     if username:
         return render_template('logged.html', username=username)
     return redirect(url_for('login'))
@@ -479,15 +489,13 @@ def check_daily_plan_internal():
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
-                print("DATAL ATUAL: ", now_brasilia)
                 if user.daily_plan_expiration is not None:
-                    daily_plan_expiration_utc = user.daily_plan_expiration.replace(tzinfo=pytz.utc)
-                    daily_plan_expiration_brasilia = daily_plan_expiration_utc.astimezone(brasilia_tz)
-                    user.daily_plan_expiration = daily_plan_expiration_brasilia
-                    db.session.commit()
-                    print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
-                    a = User.query.all()
-                    print("VARIÁVEL A: ",a)
+                    if user.daily_plan_expiration <= now_brasilia:
+                        # O plano expirou, cancelar
+                        user.typeSignature = 0
+                        user.daily_plan_expiration = None
+                        db.session.commit()
+                        print(f"Plano diário expirado para o usuário: {user.email}")
 
     except Exception as e:
         print(f"Erro ao verificar o plano diário: {str(e)}")
