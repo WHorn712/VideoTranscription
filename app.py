@@ -404,7 +404,6 @@ def pagamento():
                 user.typeSignature = plan_typeSignature
                 user.subscription_id = charge.id  # Armazene o ID da cobrança para referência
                 user.daily_plan_expiration = now_brasilia + datetime.timedelta(hours=24)
-                print("DIA DE VENCIMENTO: ", user.daily_plan_expiration)
 
 
             # Para assinaturas (plano mensal), utilize stripe.Subscription.create
@@ -481,13 +480,30 @@ def check_daily_plan_internal():
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
-                if user.daily_plan_expiration is not None:
-                    if user.daily_plan_expiration <= now_brasilia:
-                        # O plano expirou, cancelar
-                        user.typeSignature = 0
-                        user.daily_plan_expiration = None
-                        db.session.commit()
-                        print(f"Plano diário expirado para o usuário: {user.email}")
+                print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
+                print("DATAL ATUAL: ", now_brasilia)
+
+                # Transformar e atualizar o horário no banco de dados para Brasília
+                if user.daily_plan_expiration:
+                    # Adicionar informações de timezone se o datetime for offset-naive
+                    if user.daily_plan_expiration.tzinfo is None or user.daily_plan_expiration.tzinfo.utcoffset(
+                            user.daily_plan_expiration) is None:
+                        user_daily_plan_expiration_utc = brasilia_tz.localize(user.daily_plan_expiration).astimezone(
+                            pytz.utc)
+                    else:
+                        user_daily_plan_expiration_utc = user.daily_plan_expiration.astimezone(pytz.utc)
+
+                    # Atualizar o valor no banco de dados
+                    user.daily_plan_expiration = user_daily_plan_expiration_utc
+                    db.session.commit()
+
+                # Comparar as datas
+                if user.daily_plan_expiration and user.daily_plan_expiration <= now_brasilia.replace(tzinfo=pytz.utc):
+                    # O plano expirou, cancelar
+                    user.typeSignature = 0
+                    user.daily_plan_expiration = None
+                    db.session.commit()
+                    print(f"Plano diário expirado para o usuário: {user.email}")
 
     except Exception as e:
         print(f"Erro ao verificar o plano diário: {str(e)}")
