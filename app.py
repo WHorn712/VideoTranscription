@@ -251,6 +251,7 @@ def logged():
     user.typeSignature = 0
     user.subscription_id = None
     user.daily_plan_expiration = None
+    db.session.commit()
 
     if username:
         return render_template('logged.html', username=username)
