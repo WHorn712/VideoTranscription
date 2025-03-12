@@ -479,14 +479,16 @@ def check_daily_plan_internal():
             users = User.query.filter(User.typeSignature == 2, User.daily_plan_expiration != None).all()
 
             for user in users:
-                print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
                 print("DATAL ATUAL: ", now_brasilia)
-                if user.daily_plan_expiration:
+                if user.daily_plan_expiration is not None:
                     daily_plan_expiration_utc = user.daily_plan_expiration.replace(tzinfo=pytz.utc)
                     daily_plan_expiration_brasilia = daily_plan_expiration_utc.astimezone(brasilia_tz)
                     user.daily_plan_expiration = daily_plan_expiration_brasilia
                     db.session.commit()
-                    
+                    print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
+                    a = User.query.all()
+                    print("VARIÁVEL A: ",a)
+
     except Exception as e:
         print(f"Erro ao verificar o plano diário: {str(e)}")
 
