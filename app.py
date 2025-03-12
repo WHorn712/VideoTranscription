@@ -481,6 +481,11 @@ def check_daily_plan_internal():
             for user in users:
                 print("VARIÁVEL DATA LIMITE DE PLANO: ", user.daily_plan_expiration)
                 print("DATAL ATUAL: ", now_brasilia)
+                if user.daily_plan_expiration:
+                    daily_plan_expiration_utc = user.daily_plan_expiration.replace(tzinfo=pytz.utc)
+                    daily_plan_expiration_brasilia = daily_plan_expiration_utc.astimezone(brasilia_tz)
+                    user.daily_plan_expiration = daily_plan_expiration_brasilia
+                    db.session.commit()
                 if user.daily_plan_expiration <= now_brasilia:
                     # O plano expirou, cancelar
                     user.typeSignature = 0
