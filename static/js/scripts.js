@@ -177,6 +177,13 @@ if (btnTranscrever) {
             return;
         }
 
+        var progressContainer = getElement("#progress-container");
+        var progressBar = getElement("#progress-bar");
+        var progressLabel = getElement("#progress-label");
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        progressLabel.textContent = "0%";
+
         // Verifique o typeSignature antes de enviar o vídeo
         fetch('/get_type_signature')
             .then(response => {
@@ -190,6 +197,7 @@ if (btnTranscrever) {
                     // Envie o vídeo para transcrição apenas se o typeSignature for 1 ou 2
                     var formData = new FormData();
                     formData.append('file', selectedFile);
+                    updateProgressBar(30);
 
                     fetch('/transcrever', {
                         method: 'POST',
@@ -199,13 +207,19 @@ if (btnTranscrever) {
                     .then(data => {
                         if (data.message === "Vídeo enviado para transcrição com sucesso.") {
                             alert('Vídeo enviado para transcrição com sucesso. Aguarde a notificação de download.');
+                            updateProgressBar(60);
                             startPolling(data.video_id); // Inicia o loop de verificação
                         } else {
                             console.error('Erro ao enviar o vídeo:', data.error);
                             alert('Erro ao enviar o vídeo: ' + data.error);
+                            resetProgressBar();
                         }
                     })
-                    .catch(error => console.error('Erro ao transcrever o vídeo:', error));
+                    .catch(error => {
+                         console.error('Erro ao transcrever o vídeo:', error);
+                         alert('Erro ao transcrever o vídeo:', error);
+                         resetProgressBar(); // Resetar a barra de progresso em caso de erro
+                    });
                 } else {
                     // Exiba uma mensagem de erro no console se o typeSignature for 0
                     window.location.href = 'pagamento_tela';
@@ -214,6 +228,7 @@ if (btnTranscrever) {
             .catch(error => {
                 console.error('Erro ao verificar o typeSignature:', error);
                 alert('Erro ao verificar o plano. Tente novamente mais tarde.');
+                resetProgressBar();
             });
     };
 }
@@ -227,18 +242,39 @@ function startPolling(video_id) {
             if (data.status === 'completed') {
                 clearInterval(intervalId); // Para o loop de verificação
                 // Inicia o download usando window.location
+                updateProgressBar(100);
                 window.location.href = data.video_url;
             } else if (data.status === 'error') {
                 clearInterval(intervalId);
                 alert('Erro na transcrição: ' + data.error);
+                resetProgressBar();
             }
         })
         .catch(error => {
             clearInterval(intervalId);
             console.error('Erro ao verificar o status da transcrição:', error);
             alert('Erro ao verificar o status da transcrição: ' + error);
+            resetProgressBar();
         });
     }, 5000); // Verifica a cada 5 segundos
+}
+
+// Função para atualizar a barra de progresso
+function updateProgressBar(percentage) {
+    var progressBar = getElement("#progress-bar");
+    var progressLabel = getElement("#progress-label");
+    progressBar.style.width = percentage + "%";
+    progressLabel.textContent = percentage + "%";
+}
+
+// Função para resetar a barra de progresso
+function resetProgressBar() {
+    var progressContainer = getElement("#progress-container");
+    var progressBar = getElement("#progress-bar");
+    var progressLabel = getElement("#progress-label");
+    progressContainer.style.display = "none";
+    progressBar.style.width = "0%";
+    progressLabel.textContent = "0%";
 }
 
 function extractVideoId(url) {
