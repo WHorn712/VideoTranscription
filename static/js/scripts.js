@@ -248,6 +248,15 @@ function startPolling(video_id) {
                 clearInterval(intervalId);
                 alert('Erro na transcrição: ' + data.error);
                 resetProgressBar();
+            } else {
+                // Sorteio de tempo e porcentagem
+                const tempoEspera = Math.floor(Math.random() * 7000) + 3000; // Tempo entre 3 e 10 segundos
+                const porcentagemAumento = Math.floor(Math.random() * 5) + 1; // Aumento entre 1 e 5%
+
+                // Atualiza a barra de progresso com o valor sorteado
+                var currentPercentage = parseInt(getElement("#progress-label").textContent);
+                var newPercentage = Math.min(currentPercentage + porcentagemAumento, 99); // Garante que não ultrapasse 99%
+                updateProgressBar(newPercentage);
             }
         })
         .catch(error => {
