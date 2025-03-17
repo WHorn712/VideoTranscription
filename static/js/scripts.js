@@ -377,6 +377,14 @@ signButtons.forEach(function(button) {
     };
 });
 
+var signButtons = getElements('.sign-button-index');
+signButtons.forEach(function(button) {
+    button.onclick = function() {
+        if (modalPrice) modalPrice.style.display = "none";
+        abrirModal(modal);
+    };
+});
+
 function verificarStatusERedirecionar() {
     fetch('/get_type_signature')  // Substitua '/sua_nova_rota' pela rota real
         .then(response => {
