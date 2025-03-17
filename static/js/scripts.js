@@ -395,7 +395,7 @@ function verificarStatusERedirecionar() {
         })
         .then(data => {
             const status = data.status;  // Supondo que a resposta JSON contenha um campo 'status' com o número inteiro
-
+            alert('status: ', status);
             if (status === 0) {
                 window.location.href = 'pagamento_tela';  // Redireciona para a tela de pagamento
             } else {
